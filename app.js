@@ -1,7 +1,8 @@
 window.onload = function (event) {
   let boxes = [
     {
-      style: box(10, 15, 2, 15), // Box Params: Col Start, Col Span, Row Start, Row Span
+      boxStyle: box(10, 12, 2, 12), // Box Params: Col Start, Col Span, Row Start, Row Span
+      innerBoxStyle: innerBox(12, 12),
       imgs: [
         img(1, 5, 6, 5, "https://place-hold.it/500x300", 15, 0), // Img Params: Col Start, Col Span, Row Start, Row Span, Img Src, Speed, Z-Index
         img(4, 5, 2, 5, "https://place-hold.it/600x200", 1, 5),
@@ -17,11 +18,12 @@ window.onload = function (event) {
     // Creating the box elements
     const boxEle = document.createElement("div");
     boxEle.classList.add("box");
-    boxEle.setAttribute("style", box.style);
+    boxEle.setAttribute("style", box.boxStyle);
 
     // Creating the box inner elements
     const boxInnerEle = document.createElement("div");
     boxInnerEle.classList.add("box-inner");
+    boxInnerEle.setAttribute("style", box.innerBoxStyle);
 
     for (let j = 0; j < box.imgs.length; j++) {
       const img = box.imgs[j];
@@ -55,6 +57,11 @@ window.onload = function (event) {
 
   function box(colStart, colSpan, rowStart, rowSpan) {
     return `grid-area: ${rowStart} / ${colStart} / span ${rowSpan} / span ${colSpan};`;
+  }
+
+  function innerBox(colSpan, rowSpan) {
+    return `grid-template-columns: repeat(${colSpan * 2}, 1fr);
+            grid-template-rows: repeat(${rowSpan * 2}, 10px);`;
   }
 
   function img(colStart, colSpan, rowStart, rowSpan, imgSrc, speed, zIndex) {

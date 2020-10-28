@@ -30,8 +30,8 @@ main {
 
 .box-inner {
   display: grid;
-  grid-template-columns: repeat(15, 1fr);
-  grid-template-rows: repeat(15, 20px);
+  /* grid-template-columns: repeat(24, 1fr);
+  grid-template-rows: repeat(24, 10px); */
 }
 
 /* .img-container {
