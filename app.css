@@ -44,20 +44,6 @@ main {
   overflow: hidden;
 }
 
-/* .loader {
-  background-color: white;
-  height: 100vh;
-  width: 100%;
-  position: fixed;
-}
-
-.loader img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-} */
-
 /* .box {
   grid-column-start: 10;
   grid-row-start: 2;
