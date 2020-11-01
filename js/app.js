@@ -1,5 +1,20 @@
-window.onload = function (event) {
-  gsap.registerPlugin(ScrollTrigger);
+{
+  // body element
+  const body = document.body;
+
+  // calculate the viewport size
+  let winsize;
+  const calcWinsize = () =>
+    (winsize = { width: window.innerWidth, height: window.innerHeight });
+  calcWinsize();
+  // and recalculate on resize
+  window.addEventListener("resize", calcWinsize);
+
+  // scroll position and update function
+  let docScroll;
+  const getPageYScroll = () =>
+    (docScroll = window.pageYOffset || document.documentElement.scrollTop);
+  window.addEventListener("scroll", getPageYScroll);
 
   let boxes = [
     {
@@ -198,8 +213,6 @@ window.onload = function (event) {
 
   const container = document.getElementById("container");
 
-  // const controller = new ScrollMagic.Controller();
-
   for (let i = 0; i < boxes.length; i++) {
     const box = boxes[i];
 
@@ -218,11 +231,11 @@ window.onload = function (event) {
 
       // Creating the image container elements
       const imgContainerEle = document.createElement("div");
-      imgContainerEle.classList.add("img-container");
+      imgContainerEle.classList.add(`img-container`, `img-container-${j + i}`);
       imgContainerEle.setAttribute("style", img.style);
-      imgContainerEle.classList.add("rellax");
-      imgContainerEle.setAttribute("data-rellax-speed", img.speed);
-      imgContainerEle.setAttribute("data-rellax-zindex", img.zIndex);
+      // imgContainerEle.classList.add("rellax");
+      // imgContainerEle.setAttribute("data-rellax-speed", img.speed);
+      // imgContainerEle.setAttribute("data-rellax-zindex", img.zIndex);
 
       // Creating the img elements
       const imgEle = document.createElement("img");
@@ -240,25 +253,6 @@ window.onload = function (event) {
 
     container.appendChild(boxEle);
   }
-
-  // const images = document.querySelectorAll(".img-container");
-  // images.forEach((img) => {
-  //   const tl = new TimelineLite({
-  //     ease: "Power4.easeOut",
-  //     scrollTrigger: {
-  //       trigger: img,
-  //       start: "top top+=100",
-  //       markers: true,
-  //       toggleActions: "restart pause play pause",
-  //       // scrub: 1,
-  //     },
-  //   });
-  //   tl.from(img, {
-  //     opacity: 0.5,
-  //   });
-  // });
-
-  // const rellax = new Rellax(".rellax");
 
   function box(colStart, colSpan, rowStart, rowSpan) {
     return `grid-area: ${rowStart} / ${colStart} / span ${rowSpan} / span ${colSpan};`;
@@ -281,4 +275,63 @@ window.onload = function (event) {
   function randSpeed() {
     return Math.floor(Math.random() * (2 - -5) - 5);
   }
-};
+
+  // const tl = new TimelineMax({ repeat: 999 });
+
+  // tl.from(".loading > img", 0.1, {
+  //   x: 10,
+  //   y: 10,
+  //   ease: Power4.easeIn,
+  // }).to(".loading > img", 0.1, { x: 10, y: 10, ease: Power4.easeIn });
+
+  // tl.pause();
+
+  const preload = Preload();
+
+  const IMAGES_COUNT = 54;
+  const pngs = [];
+  for (var i = 1; i < IMAGES_COUNT; i++) {
+    pngs[i] = `images/${i}.png`;
+  }
+
+  preload.fetch(pngs);
+
+  preload.oncomplete = () => {
+    // gsap.registerPlugin(ScrollTrigger);
+    // const images = document.querySelectorAll(".img-container");
+    // images.forEach((img) => {
+    //   const tl = new TimelineLite({
+    //     ease: "Power4.easeOut",
+    //     scrollTrigger: {
+    //       trigger: img,
+    //       start: "top top+=100",
+    //       markers: true,
+    //       toggleActions: "restart pause play pause",
+    //       scrub: 1,
+    //     },
+    //   });
+    //   tl.from(img, {
+    //     opacity: 0.5,
+    //   });
+    // });
+    // const rellax = new Rellax(".rellax");
+
+    const img0 = offset(document.querySelectorAll(".img-container-0")[0]);
+
+    function offset(el) {
+      var rect = el.getBoundingClientRect();
+      return { top: rect.top, left: rect.left };
+    }
+
+    const tl1 = new TimelineMax();
+
+    tl1.from(".img-container-0 > img", 0.5, {
+      left: 1440 / 2 - img0.left,
+      top: 900 / 2 - img0.top,
+      x: "-50%",
+      y: "-50%",
+    });
+
+    tl1.pause();
+  };
+}

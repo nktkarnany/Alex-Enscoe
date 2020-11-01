@@ -1,13 +1,35 @@
-* {
+*,
+*::after,
+*::before {
   box-sizing: border-box;
 }
 
-html,
+:root {
+  font-size: 16px;
+}
+
 body {
-  width: 100vw;
-  overflow-x: hidden;
   margin: 0;
-  padding: 0;
+  --color-text: #1c1b1b;
+  --color-bg: #ffffff;
+  --color-link: #b07656;
+  --color-link-hover: #000;
+  --color-deco: #e4dbd6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  /* font-family: paralucent, sans-serif; */
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-link);
+  outline: none;
+}
+
+a:hover,
+a:focus {
+  color: var(--color-link-hover);
+  outline: none;
 }
 
 main {
@@ -21,6 +43,20 @@ main {
   grid-template-rows: repeat(220, 1fr);
   overflow: hidden;
 }
+
+/* .loader {
+  background-color: white;
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+}
+
+.loader img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+} */
 
 /* .box {
   grid-column-start: 10;
@@ -44,6 +80,7 @@ main {
 
 .img-container img {
   width: 100%;
+  position: relative;
 }
 
 #trigger {
