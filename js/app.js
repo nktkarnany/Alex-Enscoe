@@ -1,17 +1,5 @@
-{
-  // calculate the viewport size
-  let winsize;
-  const calcWinsize = () =>
-    (winsize = { width: window.innerWidth, height: window.innerHeight });
-  calcWinsize();
-  // and recalculate on resize
-  window.addEventListener("resize", calcWinsize);
-
-  // scroll position and update function
-  let docScroll;
-  const getPageYScroll = () =>
-    (docScroll = window.pageYOffset || document.documentElement.scrollTop);
-  window.addEventListener("scroll", getPageYScroll);
+window.addEventListener("DOMContentLoaded", (event) => {
+  gsap.registerPlugin(ScrollTrigger);
 
   class Box {
     constructor(colStart, colSpan, rowStart, rowSpan) {
@@ -63,7 +51,15 @@
         img: this.image(imageNo),
       };
 
+      // this.relax = new Rellax(`.img-container-${this.imageNo}`);
+
+      this.imageNo = imageNo;
+
+      this.imgSrc = `images/${imageNo}.png`;
+
       this.DOM.imgContainer.appendChild(this.DOM.img);
+
+      this.init();
     }
     image(imageNo) {
       const imgEle = document.createElement("img");
@@ -87,9 +83,51 @@
     getImgContainer() {
       return this.DOM.imgContainer;
     }
-    getImgPosition() {
+    loadImg() {
+      const preload = Preload();
+      return preload.fetch([this.imgSrc]);
+    }
+    loaderAnim() {
+      const timeline = new TimelineMax();
       const rect = this.DOM.imgContainer.getBoundingClientRect();
-      return { top: rect.top, left: rect.left };
+      timeline.from(this.DOM.img, 0.5, {
+        left: 1440 / 2 - rect.left,
+        top: 900 / 2 - rect.top,
+        x: "-50%",
+        y: "-50%",
+      });
+      timeline.pause();
+
+      return timeline;
+    }
+    init() {
+      const curr = this;
+      const tl = new TimelineLite({
+        ease: "Power4.easeOut",
+        scrollTrigger: {
+          trigger: this.DOM.img,
+          start: "top bottom",
+          end: "bottom center",
+          // markers: curr.imageNo == 12,
+          toggleActions: "restart pause play pause",
+          scrub: 1,
+          onLeave: function ({ progress, isActive }) {
+            if ((progress == 1) & !isActive) curr.startParallax();
+          },
+          onStartBack: function ({ isActive }) {
+            if (isActive) curr.stopParallax();
+          },
+        },
+      });
+      tl.from(this.DOM.img, {
+        opacity: 0,
+      });
+    }
+    startParallax() {
+      // this.relax.refresh();
+    }
+    stopParallax() {
+      // this.relax.destroy();
     }
   }
 
@@ -257,55 +295,73 @@
     container.appendChild(box.getBox());
   });
 
-  // const tl = new TimelineMax({ repeat: 999 });
-
-  // tl.from(".loading > img", 0.1, {
-  //   x: 10,
-  //   y: 10,
-  //   ease: Power4.easeIn,
-  // }).to(".loading > img", 0.1, { x: 10, y: 10, ease: Power4.easeIn });
-
-  // tl.pause();
-
-  const preload = Preload();
-
-  const IMAGES_COUNT = 54;
-  const pngs = [];
-  for (let i = 1; i <= IMAGES_COUNT; i++) {
-    pngs[i - 1] = `images/${i}.png`;
-  }
-
-  preload.fetch(pngs).then((i) => {
-    // console.log(i);
+  images[1 - 1].loadImg().then(() => {
+    images[1 - 1].loaderAnim().play();
+    images[5 - 1].loaderAnim().play();
+    images[7 - 1].loaderAnim().play();
+    images[10 - 1].loaderAnim().play();
   });
 
-  preload.oncomplete = () => {
-    // gsap.registerPlugin(ScrollTrigger);
-    // const images = document.querySelectorAll(".img-container");
-    // images.forEach((img) => {
-    //   const tl = new TimelineLite({
-    //     ease: "Power4.easeOut",
-    //     scrollTrigger: {
-    //       trigger: img,
-    //       start: "top top+=100",
-    //       markers: true,
-    //       toggleActions: "restart pause play pause",
-    //       scrub: 1,
-    //     },
-    //   });
-    //   tl.from(img, {
-    //     opacity: 0.5,
-    //   });
-    // });
-    // const rellax = new Rellax(".rellax");
-    const img0 = images[0].getImgPosition();
-    const tl1 = new TimelineMax();
-    tl1.from(images[0].getImg(), 0.5, {
-      left: 1440 / 2 - img0.left,
-      top: 900 / 2 - img0.top,
-      x: "-50%",
-      y: "-50%",
-    });
-    tl1.pause();
-  };
-}
+  // function pageScroll() {
+  //   window.scrollBy(0, 1);
+  //   scrolldelay = setTimeout(pageScroll, 50);
+  // }
+
+  // setTimeout(function () {
+  //   pageScroll();
+  // }, 5000);
+
+  // let relax = new Rellax(".img-container-1", {
+  //   speed: 5,
+  //   center: false,
+  //   wrapper: null,
+  //   round: true,
+  //   vertical: true,
+  //   horizontal: false,
+  // });
+});
+
+// const tl = new TimelineMax({ repeat: 999 });
+
+// tl.from(".loading > img", 0.1, {
+//   x: 10,
+//   y: 10,
+//   ease: Power4.easeIn,
+// }).to(".loading > img", 0.1, { x: 10, y: 10, ease: Power4.easeIn });
+
+// tl.pause();
+
+// preload.oncomplete = (i) => {
+//   // gsap.registerPlugin(ScrollTrigger);
+//   // const images = document.querySelectorAll(".img-container");
+//   // images.forEach((img) => {
+//   //   const tl = new TimelineLite({
+//   //     ease: "Power4.easeOut",
+//   //     scrollTrigger: {
+//   //       trigger: img,
+//   //       start: "top top+=100",
+//   //       markers: true,
+//   //       toggleActions: "restart pause play pause",
+//   //       scrub: 1,
+//   //     },
+//   //   });
+//   //   tl.from(img, {
+//   //     opacity: 0.5,
+//   //   });
+//   // });
+//   // const rellax = new Rellax(".rellax");
+// };
+
+// // calculate the viewport size
+// let winsize;
+// const calcWinsize = () =>
+//   (winsize = { width: window.innerWidth, height: window.innerHeight });
+// calcWinsize();
+// // and recalculate on resize
+// window.addEventListener("resize", calcWinsize);
+
+// // scroll position and update function
+// let docScroll;
+// const getPageYScroll = () =>
+//   (docScroll = window.pageYOffset || document.documentElement.scrollTop);
+// window.addEventListener("scroll", getPageYScroll);
