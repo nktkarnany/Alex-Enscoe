@@ -51,7 +51,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         img: this.image(imageNo),
       };
 
-      // this.relax = new Rellax(`.img-container-${this.imageNo}`);
+      this.relax;
 
       this.imageNo = imageNo;
 
@@ -106,28 +106,33 @@ window.addEventListener("DOMContentLoaded", (event) => {
         ease: "Power4.easeOut",
         scrollTrigger: {
           trigger: this.DOM.img,
-          start: "top bottom",
+          start: "top center",
           end: "bottom center",
-          // markers: curr.imageNo == 12,
+          // markers: true,
           toggleActions: "restart pause play pause",
-          scrub: 1,
+          scrub: 4,
           onLeave: function ({ progress, isActive }) {
-            if ((progress == 1) & !isActive) curr.startParallax();
+            // if ((progress == 1) & !isActive) curr.startParallax();
           },
           onStartBack: function ({ isActive }) {
-            if (isActive) curr.stopParallax();
+            // if (isActive) curr.stopParallax();
           },
         },
       });
       tl.from(this.DOM.img, {
-        opacity: 0,
+        opacity: 1,
       });
     }
     startParallax() {
-      // this.relax.refresh();
+      this.relax.refresh();
     }
     stopParallax() {
-      // this.relax.destroy();
+      this.relax.destroy();
+    }
+    initParallax() {
+      this.relax = new Rellax(`.img-container-${this.imageNo}`, {
+        speed: Math.floor(Math.random() * 3),
+      });
     }
   }
 
@@ -286,7 +291,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
   sections.forEach((section) => {
     const box = section.box;
 
-    section.imgs.forEach((img) => {
+    section.imgs.forEach((img, i) => {
       box.addImage(img.getImgContainer());
     });
 
@@ -295,12 +300,18 @@ window.addEventListener("DOMContentLoaded", (event) => {
     container.appendChild(box.getBox());
   });
 
-  images[1 - 1].loadImg().then(() => {
-    images[1 - 1].loaderAnim().play();
-    images[5 - 1].loaderAnim().play();
-    images[7 - 1].loaderAnim().play();
-    images[10 - 1].loaderAnim().play();
+  images.forEach((img, index) => {
+    new Rellax(`.img-container-${index + 1}`, {
+      speed: Math.floor(Math.random() * 3),
+    });
   });
+
+  // images[1 - 1].loadImg().then(() => {
+  //   images[1 - 1].loaderAnim().play();
+  //   images[5 - 1].loaderAnim().play();
+  //   images[7 - 1].loaderAnim().play();
+  //   images[10 - 1].loaderAnim().play();
+  // });
 
   // function pageScroll() {
   //   window.scrollBy(0, 1);
