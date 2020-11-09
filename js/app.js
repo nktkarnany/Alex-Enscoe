@@ -6,6 +6,11 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
   const container = document.querySelector(".container");
 
+  // Reasonable defaults
+  const PIXEL_STEP = 10;
+  const LINE_HEIGHT = 40;
+  const PAGE_HEIGHT = 800;
+
   class Img {
     constructor(xPos, imageNo) {
       this.xPos = xPos;
@@ -26,7 +31,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
       this.timeLapsed = 0;
       this.speed = 0;
-      this.duration = 50000;
+      this.duration = 30000;
       this.percentage;
     }
 
@@ -56,7 +61,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
     // Getting the image orientation
     imageOrientation() {
-      var orientation,
+      let orientation,
         img = new Image();
       img.src = this.imgSrc;
 
@@ -93,22 +98,25 @@ window.addEventListener("DOMContentLoaded", (event) => {
       this.speed = speed;
     }
 
+    easingDecc(t) {
+      return t * (2 - t);
+    }
+
     animate() {
       this.timeLapsed += 16 + this.speed;
-      console.log(this.timeLapsed);
       this.percentage = this.timeLapsed / this.duration;
-      if (this.percentage > 1) {
-        this.percentage = 1;
-        this.setTop(this.endLocation);
-        this.timeLapsed = 0;
-      } else {
-        this.setTop(this.startLocation + this.distance * this.percentage);
-      }
+      // if (this.percentage > 1) {
+      //   this.percentage = 1;
+      //   this.setTop(this.endLocation);
+      //   this.timeLapsed = 0;
+      // } else {
+      this.setTop(this.startLocation + this.distance * this.percentage);
+      // }
     }
   }
 
-  for (let i = 0; i < 1; i++) {
-    const image = new Img(Math.floor(Math.random() * 1100), 1);
+  for (let i = 0; i < 2; i++) {
+    const image = new Img(Math.floor(Math.random() * 1100), i + 1);
 
     container.appendChild(image.DOM.img);
 
@@ -119,29 +127,111 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
     requestAnimationFrame(updater);
 
-    window.addEventListener("wheel", function (e) {
-      image.changeSpeed(wheelDistance(e) * 100);
-      console.log(wheelDistance(e));
-    });
+    window.addEventListener("DOMMouseScroll", wheel, false);
+    window.addEventListener("mousewheel", wheel, false);
+
+    let marker = true,
+      delta,
+      direction,
+      interval = 50,
+      counter1 = 0,
+      counter2,
+      event;
+
+    function wheel(e) {
+      event = e;
+      counter1 += 1;
+      delta = e.deltaY;
+      if (delta > 0) {
+        direction = "up";
+      } else {
+        direction = "down";
+      }
+      if (marker) {
+        wheelStart();
+      }
+      return false;
+    }
+    function wheelStart() {
+      marker = false;
+      wheelAct();
+    }
+    function wheelAct() {
+      counter2 = counter1;
+      setTimeout(function () {
+        if (counter2 == counter1) {
+          wheelEnd();
+        } else {
+          let { pixelY } = scrollnormalizeWheel(event);
+          image.changeSpeed(pixelY * 10);
+          wheelAct();
+        }
+      }, interval);
+    }
+    function wheelEnd() {
+      image.changeSpeed(0);
+      marker = true;
+      counter1 = 0;
+      counter2 = false;
+    }
   }
 
-  let wheelDistance = function (evt) {
-    if (!evt) evt = event;
-    let w = evt.wheelDelta,
-      d = evt.detail;
-    if (d) {
-      if (w) return (w / d / 40) * d > 0 ? 1 : -1;
-      // Opera
-      else return -d / 3; // Firefox;         TODO: do not /3 for OS X
-    } else return w / 100; // IE/Safari/Chrome TODO: /3 for Chrome OS X
-  };
+  function scrollnormalizeWheel(/*object*/ event) /*object*/ {
+    let sX = 0,
+      sY = 0, // spinX, spinY
+      pX = 0,
+      pY = 0; // pixelX, pixelY
 
-  // let wheelDirection = function (evt) {
-  //   if (!evt) evt = event;
-  //   return evt.detail < 0 ? 1 : evt.wheelDelta > 0 ? 1 : -1;
-  // };
+    // Legacy
+    if ("detail" in event) {
+      sY = event.detail;
+    }
+    if ("wheelDelta" in event) {
+      sY = -event.wheelDelta / 120;
+    }
+    if ("wheelDeltaY" in event) {
+      sY = -event.wheelDeltaY / 120;
+    }
+    if ("wheelDeltaX" in event) {
+      sX = -event.wheelDeltaX / 120;
+    }
 
-  // function lerp(start, end, amt) {
-  //   return (1 - amt) * start + amt * end;
-  // }
+    // side scrolling on FF with DOMMouseScroll
+    if ("axis" in event && event.axis === event.HORIZONTAL_AXIS) {
+      sX = sY;
+      sY = 0;
+    }
+
+    pX = sX * PIXEL_STEP;
+    pY = sY * PIXEL_STEP;
+
+    if ("deltaY" in event) {
+      pY = event.deltaY;
+    }
+    if ("deltaX" in event) {
+      pX = event.deltaX;
+    }
+
+    if ((pX || pY) && event.deltaMode) {
+      if (event.deltaMode == 1) {
+        // delta in LINE units
+        pX *= LINE_HEIGHT;
+        pY *= LINE_HEIGHT;
+      } else {
+        // delta in PAGE units
+        pX *= PAGE_HEIGHT;
+        pY *= PAGE_HEIGHT;
+      }
+    }
+
+    // Fall-back if spin cannot be determined
+    if (pX && !sX) {
+      sX = pX < 1 ? -1 : 1;
+    }
+    if (pY && !sY) {
+      sY = pY < 1 ? -1 : 1;
+    }
+
+    return { spinX: sX, spinY: sY, pixelX: pX, pixelY: pY };
+  }
 });
