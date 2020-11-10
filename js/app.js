@@ -143,10 +143,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i < 50; i++) {
     const image = new Img(
-      Math.floor(Math.random() * 1400),
-      Math.floor(Math.random() * 900),
+      Math.floor(Math.random() * (_WIDTH - 200)),
+      Math.floor(Math.random() * _HEIGHT * 12),
       i + 1
     );
 
