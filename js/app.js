@@ -1,8 +1,6 @@
-window.addEventListener("DOMContentLoaded", (event) => {
-  const CONTAINER_WIDTH =
-    window.innerWidth || document.documentElement.clientWidth;
-  const CONTAINER_HEIGHT =
-    window.innerHeight || document.documentElement.clientHeight;
+window.addEventListener("DOMContentLoaded", () => {
+  const _WIDTH = window.innerWidth || document.documentElement.clientWidth;
+  const _HEIGHT = window.innerHeight || document.documentElement.clientHeight;
 
   const container = document.querySelector(".container");
 
@@ -11,28 +9,47 @@ window.addEventListener("DOMContentLoaded", (event) => {
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
 
+  let images = [];
+
   class Img {
-    constructor(xPos, imageNo) {
-      this.xPos = xPos;
+    constructor(xPos, yPos, imageNo) {
+      this.left = xPos;
+      this.top = yPos;
       this.imgSrc = `images/${imageNo}.png`;
 
-      console.log(this.imageOrientation());
-
       this.DOM = {
-        img: this.image(300, 300),
+        img: this.image(),
       };
 
-      this.setLeft(this.xPos);
+      this.setImageDimensions();
 
-      this.startLocation = CONTAINER_HEIGHT;
-      this.endLocation = 0 - 300;
+      this.setLeft(this.left);
+      this.setTop(this.top);
 
-      this.distance = this.endLocation - this.startLocation;
+      this.addToParent();
 
+      this.isInViewport();
+
+      this.startLocation = this.top;
+      this.endLocation = this.startLocation;
       this.timeLapsed = 0;
       this.speed = 0;
-      this.duration = 30000;
-      this.percentage;
+    }
+
+    // Add to container
+    addToParent() {
+      if (!this.checkParent()) container.appendChild(this.DOM.img);
+    }
+
+    // Remove from container
+    removeFromParent() {
+      if (this.checkParent()) container.removeChild(this.DOM.img);
+    }
+
+    // Check if parent
+    checkParent() {
+      if (container.contains(this.DOM.img)) return true;
+      return false;
     }
 
     // Image Preloader
@@ -42,83 +59,101 @@ window.addEventListener("DOMContentLoaded", (event) => {
     }
 
     // Creating an img element
-    image(width, height) {
+    image() {
       const imgEle = document.createElement("img");
       imgEle.classList.add("track");
       imgEle.setAttribute("src", this.imgSrc);
-      imgEle.setAttribute("style", `width: ${width}px;height: ${height}px;`);
 
       return imgEle;
     }
 
+    // Get image element
+    getImage() {
+      return this.DOM.img;
+    }
+
+    // Get image dimensions
+    setImageDimensions() {
+      let width;
+
+      const naturalWidth = this.DOM.img.naturalWidth;
+      const naturalHeight = this.DOM.img.naturalHeight;
+
+      const ratio = (_WIDTH - naturalWidth) / _WIDTH;
+
+      if (naturalWidth > naturalHeight) {
+        width = naturalWidth * ratio;
+      } else if (naturalWidth < naturalHeight) {
+        width = naturalWidth * ratio;
+      } else {
+        width = naturalWidth * ratio;
+      }
+
+      this.DOM.img.setAttribute("style", `width: ${width}px;height: auto;`);
+    }
+
+    // Get image dimensions
+    getImageDimensions() {
+      return {
+        width: this.DOM.img.width,
+        height: this.DOM.img.height,
+      };
+    }
+
+    // Set the position from top
     setTop(t) {
+      this.top = t;
       this.DOM.img.style.top = t + "px";
     }
 
+    // Set the position from left
     setLeft(l) {
+      this.left = l;
       this.DOM.img.style.left = l + "px";
     }
 
-    // Getting the image orientation
-    imageOrientation() {
-      let orientation,
-        img = new Image();
-      img.src = this.imgSrc;
-
-      if (img.naturalWidth > img.naturalHeight) {
-        orientation = "landscape";
-      } else if (img.naturalWidth < img.naturalHeight) {
-        orientation = "portrait";
-      } else {
-        orientation = "even";
-      }
-
-      return orientation;
+    // Change the speed of image
+    changeSpeed(speed) {
+      this.speed = speed;
     }
 
-    // Checking if the image is in the view port
+    // Animate each frame at 60fps
+    animate() {
+      this.timeLapsed -= 1 + this.speed;
+      this.endLocation = this.startLocation + this.timeLapsed;
+      this.setTop(this.endLocation);
+      console.log(this.isInViewport());
+      if (this.isInViewport()) this.addToParent();
+      else this.removeFromParent();
+    }
+
+    // Check if image is in view port
     isInViewport() {
-      const bounding = this.DOM.img.getBoundingClientRect();
+      const { width, height } = this.getImageDimensions();
       return (
-        bounding.top >= 0 &&
-        bounding.left >= 0 &&
-        bounding.bottom <= CONTAINER_HEIGHT &&
-        bounding.right <= CONTAINER_WIDTH
+        this.top >= 0 - height &&
+        this.left >= 0 - width &&
+        this.top <= _HEIGHT &&
+        this.left <= _WIDTH
       );
     }
 
-    // easing function for acceleration until halfway, then deceleration
+    // Easing function for acceleration until halfway, then deceleration
     easing(progress) {
       return progress < 0.5
         ? 4 * progress * progress * progress
         : (progress - 1) * (2 * progress - 2) * (2 * progress - 2) + 1;
     }
-
-    changeSpeed(speed) {
-      this.speed = speed;
-    }
-
-    easingDecc(t) {
-      return t * (2 - t);
-    }
-
-    animate() {
-      this.timeLapsed += 16 + this.speed;
-      this.percentage = this.timeLapsed / this.duration;
-      // if (this.percentage > 1) {
-      //   this.percentage = 1;
-      //   this.setTop(this.endLocation);
-      //   this.timeLapsed = 0;
-      // } else {
-      this.setTop(this.startLocation + this.distance * this.percentage);
-      // }
-    }
   }
 
-  for (let i = 0; i < 2; i++) {
-    const image = new Img(Math.floor(Math.random() * 1100), i + 1);
+  for (let i = 0; i < 1; i++) {
+    const image = new Img(
+      Math.floor(Math.random() * 1400),
+      Math.floor(Math.random() * 900),
+      i + 1
+    );
 
-    container.appendChild(image.DOM.img);
+    images.push(image);
 
     const updater = function () {
       image.animate();
@@ -126,57 +161,55 @@ window.addEventListener("DOMContentLoaded", (event) => {
     };
 
     requestAnimationFrame(updater);
-
-    window.addEventListener("DOMMouseScroll", wheel, false);
-    window.addEventListener("mousewheel", wheel, false);
-
-    let marker = true,
-      delta,
-      direction,
-      interval = 50,
-      counter1 = 0,
-      counter2,
-      event;
-
-    function wheel(e) {
-      event = e;
-      counter1 += 1;
-      delta = e.deltaY;
-      if (delta > 0) {
-        direction = "up";
-      } else {
-        direction = "down";
-      }
-      if (marker) {
-        wheelStart();
-      }
-      return false;
-    }
-    function wheelStart() {
-      marker = false;
-      wheelAct();
-    }
-    function wheelAct() {
-      counter2 = counter1;
-      setTimeout(function () {
-        if (counter2 == counter1) {
-          wheelEnd();
-        } else {
-          let { pixelY } = scrollnormalizeWheel(event);
-          image.changeSpeed(pixelY * 10);
-          wheelAct();
-        }
-      }, interval);
-    }
-    function wheelEnd() {
-      image.changeSpeed(0);
-      marker = true;
-      counter1 = 0;
-      counter2 = false;
-    }
   }
 
-  function scrollnormalizeWheel(/*object*/ event) /*object*/ {
+  // Wheel Tracking Code Starts Here
+  window.addEventListener("DOMMouseScroll", wheel, false);
+  window.addEventListener("mousewheel", wheel, false);
+
+  let marker = true,
+    delta,
+    direction,
+    interval = 50,
+    counter1 = 0,
+    counter2,
+    event;
+
+  function wheel(e) {
+    event = e;
+    counter1 += 1;
+    delta = e.deltaY;
+    if (delta > 0) {
+      direction = "up";
+    } else {
+      direction = "down";
+    }
+    if (marker) {
+      // wheelStart
+      marker = false;
+      wheelAct();
+      // wheelStart
+    }
+    return false;
+  }
+  function wheelAct() {
+    counter2 = counter1;
+    setTimeout(function () {
+      if (counter2 == counter1) {
+        // wheelEnd
+        images.forEach((image) => image.changeSpeed(0));
+        marker = true;
+        counter1 = 0;
+        counter2 = false;
+        // wheelEnd
+      } else {
+        let { pixelY } = scrollnormalizeWheel(event);
+        images.forEach((image) => image.changeSpeed(pixelY));
+        wheelAct();
+      }
+    }, interval);
+  }
+  function scrollnormalizeWheel(event) {
     let sX = 0,
       sY = 0, // spinX, spinY
       pX = 0,
@@ -234,4 +267,5 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
     return { spinX: sX, spinY: sY, pixelX: pX, pixelY: pY };
   }
+  // Wheel Tracking Code Ends Here
 });
