@@ -28,8 +28,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
       this.addToParent();
 
-      this.isInViewport();
-
       this.startLocation = this.top;
       this.endLocation = this.startLocation;
       this.timeLapsed = 0;
@@ -122,7 +120,6 @@ window.addEventListener("DOMContentLoaded", () => {
       this.timeLapsed -= 1 + this.speed;
       this.endLocation = this.startLocation + this.timeLapsed;
       this.setTop(this.endLocation);
-      console.log(this.isInViewport());
       if (this.isInViewport()) this.addToParent();
       else this.removeFromParent();
     }
