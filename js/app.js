@@ -6,6 +6,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const container = document.querySelector(".container");
 
+  // Reasonable defaults
+  const PIXEL_STEP = 10;
+  const LINE_HEIGHT = 40;
+  const PAGE_HEIGHT = 800;
+
+  // Wheel event variables
+  let marker = true,
+    delta,
+    direction,
+    interval = 50,
+    counter1 = 0,
+    counter2,
+    event;
+
+  const images = [];
+
   class Box {
     constructor(colStart, colSpan, rowStart, rowSpan) {
       this.DOM = {
@@ -53,23 +69,11 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Reasonable defaults
-  const PIXEL_STEP = 10;
-  const LINE_HEIGHT = 40;
-  const PAGE_HEIGHT = 800;
-
-  // Wheel event variables
-  let marker = true,
-    delta,
-    direction,
-    interval = 50,
-    counter1 = 0,
-    counter2,
-    event;
-
   class Img {
     constructor(colStart, colSpan, rowStart, rowSpan, imageNo) {
       const curr = this;
+
+      this.imageNo = imageNo;
 
       this.imgSrc = `images/${imageNo}.png`;
 
@@ -88,13 +92,13 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     init() {
-      const bounding = this.DOM.imgContainer.getBoundingClientRect();
-      this.setTop(bounding.top);
+      // const bounding = this.DOM.imgContainer.getBoundingClientRect();
+      // this.setTop(bounding.top);
 
-      this.startLocation = bounding.top;
+      this.startLocation = CLIENT_HEIGHT;
       this.endLocation = this.startLocation;
-      this.timeLapsed = 0;
       this.speed = 0;
+      this.setTimeLapsed(0);
     }
 
     // Image Preloader
@@ -129,7 +133,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Set the position from top
     setTop(t) {
-      this.top = t;
       this.DOM.imgContainer.style.transform = `translateY(${t}px)`;
     }
 
@@ -138,11 +141,36 @@ window.addEventListener("DOMContentLoaded", () => {
       this.speed = speed;
     }
 
+    setTimeLapsed(t) {
+      this.DOM.imgContainer.setAttribute("data-time-lapsed", t);
+    }
+
+    getTimeLapsed() {
+      return this.DOM.imgContainer.getAttribute("data-time-lapsed");
+    }
+
     // Animate each frame at 60fps
     animate() {
-      this.timeLapsed -= 1 + this.speed;
-      this.endLocation = this.startLocation + this.timeLapsed;
+      let timeLapsed = this.getTimeLapsed();
+      timeLapsed -= 1 + this.speed;
+      this.setTimeLapsed(timeLapsed);
+      this.endLocation = this.startLocation + timeLapsed;
       this.setTop(this.endLocation);
+
+      // this.upperThreshold =
+      //   container.clientHeight -
+      //   CLIENT_HEIGHT -
+      //   this.DOM.imgContainer.clientHeight;
+
+      // if (this.imageNo > 44) {
+      this.upperThreshold = container.clientHeight;
+      // }
+
+      if (timeLapsed > container.clientHeight) {
+        this.setTimeLapsed(0);
+      } else if (Math.abs(timeLapsed) > this.upperThreshold) {
+        this.setTimeLapsed(0 + this.DOM.imgContainer.clientHeight);
+      }
     }
 
     // Get image dimensions
@@ -343,21 +371,13 @@ window.addEventListener("DOMContentLoaded", () => {
     },
   ];
 
-  const images = [];
-
+  // Checking image container viewport starts here
   const observer = new IntersectionObserver(handleIntersection, {
     threshold: 0.85,
   });
 
-  const observer1 = new IntersectionObserver(handleIntersection1, {
-    root: document.getElementById("threshold"),
-    threshold: 1.0,
-  });
-
-  // Checking intersection in viewport
   function handleIntersection(entries) {
     entries.map((entry) => {
-      console.log(entry);
       if (entry.isIntersecting) {
         entry.target.classList.add("visible");
       } else {
@@ -365,13 +385,9 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  // Checking image container viewport ends here
 
-  function handleIntersection1(entries) {
-    entries.map((entry) => {
-      console.log(entry);
-    });
-  }
-
+  // Elements Rendering Starts Here
   sections.forEach((section) => {
     const box = section.box;
     const imgs = section.imgs;
@@ -381,20 +397,23 @@ window.addEventListener("DOMContentLoaded", () => {
 
       observer.observe(img.DOM.imgContainer);
 
-      // observer1.observe(img.DOM.imgContainer);
-
-      const updater = function () {
-        img.animate();
-        requestAnimationFrame(updater); // for subsequent frames
-      };
-
       img.init();
-
-      requestAnimationFrame(updater);
     });
 
     images.push(...imgs);
   });
+  // Elements Rendering Starts Here
+
+  // Animation Starts Here
+  const updater = function () {
+    images.forEach((img) => {
+      img.animate();
+    });
+    requestAnimationFrame(updater); // for subsequent frames
+  };
+
+  requestAnimationFrame(updater);
+  // Animation Ends Here
 
   // Wheel Tracking Code Starts Here
   window.addEventListener("DOMMouseScroll", wheel, false);

@@ -42,16 +42,12 @@ main {
 }
 
 .container {
+  position: relative;
   background-color: #ffffff;
   display: grid;
   grid-template-columns: repeat(48, 1fr);
   grid-template-rows: repeat(220, 1fr);
   overflow: hidden;
-}
-
-#threshold {
-  position: fixed;
-  bottom: 0;
 }
 
 .box-inner {
