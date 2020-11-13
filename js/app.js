@@ -10,6 +10,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const PIXEL_STEP = 10;
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
+  const IDLE_SPEED = 1;
 
   // Wheel event variables
   let marker = true,
@@ -18,6 +19,7 @@ window.addEventListener("DOMContentLoaded", () => {
     interval = 50,
     counter1 = 0,
     counter2,
+    wheelDelta = 0,
     event;
 
   const images = [];
@@ -33,6 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       container.appendChild(this.DOM.box);
     }
+
     box(colStart, colSpan, rowStart, rowSpan) {
       const boxEle = document.createElement("div");
       boxEle.classList.add("box");
@@ -43,6 +46,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       return boxEle;
     }
+
     boxInner(colSpan, rowSpan) {
       const boxInnerEle = document.createElement("div");
       boxInnerEle.classList.add("box-inner");
@@ -54,16 +58,20 @@ window.addEventListener("DOMContentLoaded", () => {
 
       return boxInnerEle;
     }
+
     addImage(img) {
       this.DOM.boxInner.appendChild(img);
     }
+
     removeImage(img) {
       if (this.checkParent(img)) this.DOM.boxInner.removeChild(img);
     }
+
     checkParent(img) {
       if (this.DOM.boxInner.contains(img)) return true;
       return false;
     }
+
     getBox() {
       return this.DOM.box;
     }
@@ -94,11 +102,16 @@ window.addEventListener("DOMContentLoaded", () => {
     init() {
       // const bounding = this.DOM.imgContainer.getBoundingClientRect();
       // this.setTop(bounding.top);
-
-      this.startLocation = CLIENT_HEIGHT;
-      this.endLocation = this.startLocation;
+      this.originalPosition = 0;
+      this.startLocation = 0;
+      this.location = 0;
       this.speed = 0;
+      this.easedSpeed = 0;
       this.setTimeLapsed(0);
+    }
+
+    getBounding() {
+      this.originalPosition = this.DOM.imgContainer.getBoundingClientRect().y;
     }
 
     // Image Preloader
@@ -142,7 +155,8 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     setTimeLapsed(t) {
-      this.DOM.imgContainer.setAttribute("data-time-lapsed", t);
+      //this.DOM.imgContainer.setAttribute("data-time-lapsed", t);
+      this.location = t;
     }
 
     getTimeLapsed() {
@@ -151,26 +165,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Animate each frame at 60fps
     animate() {
-      let timeLapsed = this.getTimeLapsed();
-      timeLapsed -= 1 + this.speed;
-      this.setTimeLapsed(timeLapsed);
-      this.endLocation = this.startLocation + timeLapsed;
-      this.setTop(this.endLocation);
-
-      // this.upperThreshold =
-      //   container.clientHeight -
-      //   CLIENT_HEIGHT -
-      //   this.DOM.imgContainer.clientHeight;
-
-      // if (this.imageNo > 44) {
-      this.upperThreshold = container.clientHeight;
-      // }
-
-      if (timeLapsed > container.clientHeight) {
-        this.setTimeLapsed(0);
-      } else if (Math.abs(timeLapsed) > this.upperThreshold) {
-        this.setTimeLapsed(0 + this.DOM.imgContainer.clientHeight);
+      const speed = IDLE_SPEED + wheelDelta;
+      this.easedSpeed = lerp(this.easedSpeed, speed, 0.12);
+      let newLocation = this.location - this.easedSpeed;
+      this.upperThreshold = container.clientHeight + this.originalPosition;
+      /*if (timeLapsed > container.clientHeight) {
+        timeLapsed = 0;
+      } else*/
+      if (Math.abs(newLocation) >= this.upperThreshold) {
+        newLocation = (CLIENT_HEIGHT - this.originalPosition) - this.easedSpeed;
       }
+
+      this.setTimeLapsed(newLocation);
+      this.setTop(newLocation);
     }
 
     // Get image dimensions
@@ -206,7 +213,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Check if image is in view port
     isInViewport() {
-      const { width, height } = this.getImageDimensions();
+      const {width, height} = this.getImageDimensions();
       return (
         this.top >= 0 - height &&
         this.left >= 0 - width &&
@@ -385,6 +392,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
   // Checking image container viewport ends here
 
   // Elements Rendering Starts Here
@@ -395,7 +403,7 @@ window.addEventListener("DOMContentLoaded", () => {
     imgs.forEach((img) => {
       box.addImage(img.DOM.imgContainer);
 
-      observer.observe(img.DOM.imgContainer);
+      //observer.observe(img.DOM.imgContainer);
 
       img.init();
     });
@@ -412,7 +420,13 @@ window.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(updater); // for subsequent frames
   };
 
-  requestAnimationFrame(updater);
+
+  setTimeout(function () {
+    requestAnimationFrame(updater);
+    images.forEach(function (img) {
+      img.getBounding();
+    });
+  }, 200);
   // Animation Ends Here
 
   // Wheel Tracking Code Starts Here
@@ -436,23 +450,27 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     return false;
   }
+
   function wheelAct() {
     counter2 = counter1;
     setTimeout(function () {
       if (counter2 == counter1) {
         // wheelEnd
-        images.forEach((image) => image.changeSpeed(0));
+        //images.forEach((image) => image.changeSpeed(0));
         marker = true;
         counter1 = 0;
         counter2 = false;
+        wheelDelta = 0;
         // wheelEnd
       } else {
-        let { pixelY } = scrollnormalizeWheel(event);
-        images.forEach((image) => image.changeSpeed(pixelY));
+        let {pixelY} = scrollnormalizeWheel(event);
+        //images.forEach((image) => image.changeSpeed(pixelY));
+        wheelDelta = pixelY;
         wheelAct();
       }
     }, interval);
   }
+
   function scrollnormalizeWheel(event) {
     let sX = 0,
       sY = 0, // spinX, spinY
@@ -509,7 +527,13 @@ window.addEventListener("DOMContentLoaded", () => {
       sY = pY < 1 ? -1 : 1;
     }
 
-    return { spinX: sX, spinY: sY, pixelX: pX, pixelY: pY };
+    return {spinX: sX, spinY: sY, pixelX: pX, pixelY: pY};
   }
+
   // Wheel Tracking Code Ends Here
 });
+
+
+function lerp(min, max, t) {
+  return min * (1 - t) + max * t;
+}
