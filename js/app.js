@@ -152,7 +152,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // Animate each frame at 60fps
     animate() {
       let timeLapsed = this.getTimeLapsed();
-      timeLapsed -= 1 + this.speed;
+      timeLapsed -= 6 + this.speed;
       this.setTimeLapsed(timeLapsed);
       this.endLocation = this.startLocation + timeLapsed;
       this.setTop(this.endLocation);
@@ -169,7 +169,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (timeLapsed > container.clientHeight) {
         this.setTimeLapsed(0);
       } else if (Math.abs(timeLapsed) > this.upperThreshold) {
-        this.setTimeLapsed(0 + this.DOM.imgContainer.clientHeight);
+        this.setTimeLapsed(0);
       }
     }
 
