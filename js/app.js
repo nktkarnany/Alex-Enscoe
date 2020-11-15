@@ -145,8 +145,6 @@ window.addEventListener("DOMContentLoaded", () => {
     animate() {
       this.position -= 6 + this.speed;
 
-      // console.log(this.speed);
-
       this.upperThreshold = container.clientHeight;
 
       if (this.imageNo > 44) {
@@ -158,6 +156,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
         if (this.imageNo > 44) {
           this.position = 0 - CLIENT_HEIGHT;
+        }
+      }
+
+      if (this.speed < 0) {
+        this.upperThreshold = 0;
+
+        // if (this.imageNo > 44) {
+        //   this.upperThreshold = - CLIENT_HEIGHT;
+        // }
+
+        if (this.position > this.upperThreshold) {
+          this.position = 0 - container.clientHeight;
+
+          // if (this.imageNo > 44) {
+          //   this.position = 0 - container.clientHeight + CLIENT_HEIGHT;
+          // }
         }
       }
 
