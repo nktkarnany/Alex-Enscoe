@@ -50,6 +50,15 @@ main {
   overflow: hidden;
 }
 
+.heading {
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%);
+  text-transform: uppercase;
+  font-size: 1rem;
+}
+
 .box-inner {
   display: grid;
 }
@@ -58,6 +67,11 @@ main {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   will-change: transform;
+  z-index: 1;
+}
+
+.img-container:hover {
+  z-index: 2;
 }
 
 .img-container.visible {

@@ -10,6 +10,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const PIXEL_STEP = 10;
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
+  const IDLE_SPEED = 2;
+  const FRICTION_COEFICIENT = 0.65;
+  const SCALE_FACTOR = 0.5;
 
   // Wheel event variables
   let marker = true,
@@ -89,16 +92,21 @@ window.addEventListener("DOMContentLoaded", () => {
       };
 
       this.DOM.imgContainer.appendChild(this.DOM.img);
+
+      this.DOM.imgContainer.addEventListener("mouseover", () =>
+        curr.over(curr)
+      );
+
+      this.DOM.imgContainer.addEventListener("mouseout", () => curr.out(curr));
     }
 
+    // Initialising Variables
     init() {
-      // const bounding = this.DOM.imgContainer.getBoundingClientRect();
-      // this.setTop(bounding.top);
-
       this.startLocation = CLIENT_HEIGHT;
       this.endLocation = this.startLocation;
       this.speed = 0;
       this.position = 0;
+      this.scale = 1;
     }
 
     // Image Preloader
@@ -107,6 +115,7 @@ window.addEventListener("DOMContentLoaded", () => {
       return preload.fetch([this.imgSrc]);
     }
 
+    // Creating the image container
     imageContainer(colStart, colSpan, rowStart, rowSpan, i) {
       const imgContainerEle = document.createElement("div");
       imgContainerEle.classList.add(`img-container`);
@@ -136,14 +145,37 @@ window.addEventListener("DOMContentLoaded", () => {
       this.DOM.imgContainer.style.transform = `translateY(${t}px)`;
     }
 
+    // Mouse Over Function
+    over(curr) {
+      TweenLite.to(curr.DOM.img, 0.3, {
+        scale: 1 + SCALE_FACTOR,
+        ease: Sine.easeInOut,
+      });
+      mouseOver();
+    }
+
+    // Mouse Out Function
+    out(curr) {
+      TweenLite.to(curr.DOM.img, 0.3, {
+        scale: 1,
+        ease: Sine.easeInOut,
+      });
+      mouseOut();
+    }
+
     // Change the speed of image
     changeSpeed(speed) {
       this.speed = speed;
     }
 
+    // Add Friction to the speed
+    addFriction() {
+      this.speed = -IDLE_SPEED * FRICTION_COEFICIENT;
+    }
+
     // Animate each frame at 60fps
     animate() {
-      this.position -= 6 + this.speed;
+      this.position -= IDLE_SPEED + this.speed;
 
       this.upperThreshold = container.clientHeight;
 
@@ -420,6 +452,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
   requestAnimationFrame(updater);
   // Animation Ends Here
+
+  // Image Containers Mouse Hover Starts Here
+  function mouseOver() {
+    images.forEach((img) => {
+      img.addFriction();
+    });
+  }
+  function mouseOut() {
+    images.forEach((img) => {
+      img.changeSpeed(0);
+    });
+  }
+  // Image Containers Mouse Hover Ends Here
 
   // Wheel Tracking Code Starts Here
   window.addEventListener("DOMMouseScroll", wheel, false);
