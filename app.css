@@ -57,6 +57,7 @@ main {
 .img-container {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  will-change: transform;
 }
 
 .img-container.visible {

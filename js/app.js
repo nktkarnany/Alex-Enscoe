@@ -98,7 +98,7 @@ window.addEventListener("DOMContentLoaded", () => {
       this.startLocation = CLIENT_HEIGHT;
       this.endLocation = this.startLocation;
       this.speed = 0;
-      this.setTimeLapsed(0);
+      this.position = 0;
     }
 
     // Image Preloader
@@ -141,36 +141,28 @@ window.addEventListener("DOMContentLoaded", () => {
       this.speed = speed;
     }
 
-    setTimeLapsed(t) {
-      this.DOM.imgContainer.setAttribute("data-time-lapsed", t);
-    }
-
-    getTimeLapsed() {
-      return this.DOM.imgContainer.getAttribute("data-time-lapsed");
-    }
-
     // Animate each frame at 60fps
     animate() {
-      let timeLapsed = this.getTimeLapsed();
-      timeLapsed -= 6 + this.speed;
-      this.setTimeLapsed(timeLapsed);
-      this.endLocation = this.startLocation + timeLapsed;
-      this.setTop(this.endLocation);
+      this.position -= 6 + this.speed;
 
-      // this.upperThreshold =
-      //   container.clientHeight -
-      //   CLIENT_HEIGHT -
-      //   this.DOM.imgContainer.clientHeight;
+      // console.log(this.speed);
 
-      // if (this.imageNo > 44) {
       this.upperThreshold = container.clientHeight;
-      // }
 
-      if (timeLapsed > container.clientHeight) {
-        this.setTimeLapsed(0);
-      } else if (Math.abs(timeLapsed) > this.upperThreshold) {
-        this.setTimeLapsed(0);
+      if (this.imageNo > 44) {
+        this.upperThreshold = container.clientHeight + CLIENT_HEIGHT;
       }
+
+      if (Math.abs(this.position) > this.upperThreshold) {
+        this.position = 0;
+
+        if (this.imageNo > 44) {
+          this.position = 0 - CLIENT_HEIGHT;
+        }
+      }
+
+      this.endLocation = this.startLocation + this.position;
+      this.setTop(this.endLocation);
     }
 
     // Get image dimensions
