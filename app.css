@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "Grosa-Medium";
+  src: url("./fonts/Grosa-Medium.woff2") format("woff2"),
+    url("./fonts/Grosa-Medium.woff") format("woff"),
+    url("./fonts/Grosa-Medium.ttf") format("truetype");
+}
+
 *,
 *::after,
 *::before {
@@ -18,6 +25,7 @@ body {
   color: var(--color-text);
   background-color: var(--color-bg);
   overflow: hidden;
+  font-family: "Grosa-Medium";
 }
 
 body::-webkit-scrollbar {
@@ -56,7 +64,9 @@ main {
   left: 50%;
   transform: translateX(-50%);
   text-transform: uppercase;
-  font-size: 1rem;
+  font-size: 0.875rem;
+  font-weight: normal;
+  margin-top: 1.25rem;
 }
 
 .box-inner {
@@ -65,7 +75,7 @@ main {
 
 .img-container {
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-out;
   will-change: transform;
   z-index: 1;
 }

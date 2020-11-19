@@ -10,9 +10,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const PIXEL_STEP = 10;
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
-  const IDLE_SPEED = 2;
-  const FRICTION_COEFICIENT = 0.65;
-  const SCALE_FACTOR = 0.5;
+  const IDLE_SPEED = 1;
+  const FRICTION_COEFICIENT = 0.85;
+  const SCALE_FACTOR = 0.25;
 
   // Wheel event variables
   let marker = true,
@@ -93,11 +93,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
       this.DOM.imgContainer.appendChild(this.DOM.img);
 
-      this.DOM.imgContainer.addEventListener("mouseover", () =>
+      this.DOM.imgContainer.addEventListener("mouseenter", () =>
         curr.over(curr)
       );
 
-      this.DOM.imgContainer.addEventListener("mouseout", () => curr.out(curr));
+      this.DOM.imgContainer.addEventListener("mouseleave", () =>
+        curr.out(curr)
+      );
     }
 
     // Initialising Variables
@@ -107,12 +109,6 @@ window.addEventListener("DOMContentLoaded", () => {
       this.speed = 0;
       this.position = 0;
       this.scale = 1;
-    }
-
-    // Image Preloader
-    loadImg() {
-      const preload = Preload();
-      return preload.fetch([this.imgSrc]);
     }
 
     // Creating the image container
@@ -130,7 +126,10 @@ window.addEventListener("DOMContentLoaded", () => {
     // Creating an img element
     image() {
       const imgEle = document.createElement("img");
-      imgEle.setAttribute("src", this.imgSrc);
+      const preload = Preload();
+      preload.fetch([this.imgSrc]).then(() => {
+        imgEle.setAttribute("src", this.imgSrc);
+      });
 
       return imgEle;
     }
@@ -147,19 +146,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Mouse Over Function
     over(curr) {
-      TweenLite.to(curr.DOM.img, 0.3, {
-        scale: 1 + SCALE_FACTOR,
-        ease: Sine.easeInOut,
-      });
+      // TweenLite.to(curr.DOM.img, 0.75, {
+      //   scale: 1 + SCALE_FACTOR,
+      //   ease: Sine.easeOut,
+      // });
       mouseOver();
     }
 
     // Mouse Out Function
     out(curr) {
-      TweenLite.to(curr.DOM.img, 0.3, {
-        scale: 1,
-        ease: Sine.easeInOut,
-      });
+      // TweenLite.to(curr.DOM.img, 0.4, {
+      //   scale: 1,
+      //   ease: Power0.easeNone,
+      // });
       mouseOut();
     }
 
@@ -209,48 +208,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
       this.endLocation = this.startLocation + this.position;
       this.setTop(this.endLocation);
-    }
-
-    // Get image dimensions
-    setImageDimensions() {
-      let width;
-
-      const naturalWidth = this.DOM.imgContainer.naturalWidth;
-      const naturalHeight = this.DOM.imgContainer.naturalHeight;
-
-      const ratio = (CLIENT_WIDTH - naturalWidth) / CLIENT_WIDTH;
-
-      if (naturalWidth > naturalHeight) {
-        width = naturalWidth * (ratio + 0.2);
-      } else if (naturalWidth < naturalHeight) {
-        width = naturalWidth * (ratio - 0.2);
-      } else {
-        width = naturalWidth * ratio;
-      }
-
-      this.DOM.imgContainer.setAttribute(
-        "style",
-        `width: ${width}px;height: auto;`
-      );
-    }
-
-    // Get image dimensions
-    getImageDimensions() {
-      return {
-        width: this.DOM.imgContainer.width,
-        height: this.DOM.imgContainer.height,
-      };
-    }
-
-    // Check if image is in view port
-    isInViewport() {
-      const { width, height } = this.getImageDimensions();
-      return (
-        this.top >= 0 - height &&
-        this.left >= 0 - width &&
-        this.top <= CLIENT_HEIGHT &&
-        this.left <= CLIENT_WIDTH
-      );
     }
 
     // Easing function for acceleration until halfway, then deceleration
