@@ -368,15 +368,28 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Checking image container viewport starts here
   const observer = new IntersectionObserver(handleIntersection, {
-    threshold: 0.85,
+    threshold: buildThresholdList(),
   });
+
+  function buildThresholdList() {
+    let thresholds = [];
+    const numSteps = 100.0;
+
+    for (let i = 1.0; i <= numSteps; i++) {
+      let ratio = i / numSteps;
+      thresholds.push(ratio);
+    }
+
+    thresholds.push(0);
+    return thresholds;
+  }
 
   function handleIntersection(entries) {
     entries.map((entry) => {
       if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
+        entry.target.style.opacity = entry.intersectionRatio;
       } else {
-        entry.target.classList.remove("visible");
+        entry.target.style.opacity = 1 - entry.intersectionRatio;
       }
     });
   }
