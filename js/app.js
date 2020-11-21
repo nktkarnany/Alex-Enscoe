@@ -257,7 +257,9 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      if (this.isVisible() && this.buffer != 0) this.buffer -= 2;
+      if (this.isVisible() && this.buffer > 0) {
+        this.buffer -= 5 * this.easing(this.buffer / POSITION_BUFFER);
+      }
       // if (!this.isVisible() && this.buffer != POSITION_BUFFER)
       //   this.buffer = POSITION_BUFFER;
       this.endLocation = this.startLocation + this.buffer + this.position;
