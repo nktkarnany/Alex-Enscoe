@@ -13,6 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const IDLE_SPEED = 1;
   const FRICTION_COEFICIENT = 0.85;
   const SCALE_FACTOR = 0.25;
+  const POSITION_BUFFER = 30;
 
   // Wheel event variables
   let marker = true,
@@ -93,18 +94,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
       this.DOM.imgContainer.appendChild(this.DOM.img);
 
-      this.DOM.imgContainer.addEventListener("mouseenter", () =>
-        curr.over(curr)
-      );
+      this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
 
-      this.DOM.imgContainer.addEventListener("mouseleave", () =>
-        curr.out(curr)
-      );
+      this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
     }
 
     // Initialising Variables
     init() {
       this.startLocation = CLIENT_HEIGHT;
+      this.buffer = POSITION_BUFFER;
       this.endLocation = this.startLocation;
       this.speed = 0;
       this.position = 0;
@@ -119,6 +117,7 @@ window.addEventListener("DOMContentLoaded", () => {
         "style",
         `grid-area: ${rowStart} / ${colStart} / span ${rowSpan} / span ${colSpan};`
       );
+      imgContainerEle.dataset.visible = 0;
 
       return imgContainerEle;
     }
@@ -139,31 +138,42 @@ window.addEventListener("DOMContentLoaded", () => {
       return this.DOM.imgContainer;
     }
 
+    // Is the element visible in the viewport, check the dataset
+    isVisible() {
+      return this.DOM.imgContainer.dataset.visible == 1;
+    }
+
     // Set the position from top
     setTop(t) {
-      this.DOM.imgContainer.style.transform = `translateY(${t}px)`;
+      // this.DOM.imgContainer.style.transform = `translateY(${t}px)`;
+      TweenMax.to(this.DOM.imgContainer, 0, {
+        y: t,
+        ease: Linear.easeNone,
+      });
     }
 
     // Mouse Over Function
-    over(curr) {
-      // TweenLite.to(curr.DOM.img, 0.75, {
-      //   scale: 1 + SCALE_FACTOR,
-      //   ease: Sine.easeOut,
-      // });
+    over() {
+      TweenMax.to(this.DOM.imgContainer, 0.4, {
+        scale: 1 + SCALE_FACTOR,
+        ease: Sine.easeOut,
+      });
       mouseOver();
     }
 
     // Mouse Out Function
-    out(curr) {
-      // TweenLite.to(curr.DOM.img, 0.4, {
-      //   scale: 1,
-      //   ease: Power0.easeNone,
-      // });
+    out() {
+      TweenMax.to(this.DOM.imgContainer, 0.3, {
+        scale: 1,
+        ease: Sine.easeIn,
+      });
       mouseOut();
     }
 
     // Change the speed of image
     changeSpeed(speed) {
+      if (speed != 0) this.buffer = 0;
+      if (speed == 0 && !this.isVisible()) this.buffer = POSITION_BUFFER;
       this.speed = speed;
     }
 
@@ -206,7 +216,10 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      this.endLocation = this.startLocation + this.position;
+      if (this.isVisible() && this.buffer != 0) this.buffer -= 2;
+      // if (!this.isVisible() && this.buffer != POSITION_BUFFER)
+      //   this.buffer = POSITION_BUFFER;
+      this.endLocation = this.startLocation + this.buffer + this.position;
       this.setTop(this.endLocation);
     }
 
@@ -373,7 +386,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function buildThresholdList() {
     let thresholds = [];
-    const numSteps = 100.0;
+    const numSteps = 80.0;
 
     for (let i = 1.0; i <= numSteps; i++) {
       let ratio = i / numSteps;
@@ -387,9 +400,13 @@ window.addEventListener("DOMContentLoaded", () => {
   function handleIntersection(entries) {
     entries.map((entry) => {
       if (entry.isIntersecting) {
-        entry.target.style.opacity = entry.intersectionRatio;
+        if (entry.intersectionRatio > 0.8) {
+          entry.target.dataset.visible = 1;
+          entry.target.classList.add("visible");
+        }
       } else {
-        entry.target.style.opacity = 1 - entry.intersectionRatio;
+        entry.target.dataset.visible = 0;
+        entry.target.classList.remove("visible");
       }
     });
   }
