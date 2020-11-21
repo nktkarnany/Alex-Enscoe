@@ -15,6 +15,22 @@ window.addEventListener("DOMContentLoaded", () => {
   const SCALE_FACTOR = 0.25;
   const POSITION_BUFFER = 30;
 
+  // Mouse event variables
+  let oldMouseX = 0,
+    mouseX = 0;
+  let oldMouseY = 0,
+    mouseY = 0;
+  let isMouseMoving = false;
+  let isMouseOver = null;
+
+  setInterval(() => {
+    if (oldMouseX != mouseX) isMouseMoving = true;
+    else if (oldMouseY != mouseY) isMouseMoving = true;
+    else isMouseMoving = false;
+    oldMouseX = mouseX;
+    oldMouseY = mouseY;
+  }, 300);
+
   // Wheel event variables
   let marker = true,
     delta,
@@ -150,24 +166,49 @@ window.addEventListener("DOMContentLoaded", () => {
         y: t,
         ease: Linear.easeNone,
       });
+      const isCollision = this.doesMouseCollide();
+      if (!isMouseMoving && this.isVisible() && isCollision) {
+        this.over();
+      }
+      if (isMouseOver == this.imageNo && !isCollision) {
+        this.out();
+      }
+      if (isMouseMoving && isMouseOver == this.imageNo && !isCollision) {
+        this.out();
+      }
+    }
+
+    // Checking if image container box collides with mouse pointer
+    doesMouseCollide() {
+      const {
+        top,
+        left,
+        right,
+        bottom,
+      } = this.DOM.imgContainer.getBoundingClientRect();
+      return mouseX > left && mouseX < right && mouseY < bottom && mouseY > top;
     }
 
     // Mouse Over Function
     over() {
-      TweenMax.to(this.DOM.imgContainer, 0.4, {
-        scale: 1 + SCALE_FACTOR,
-        ease: Sine.easeOut,
-      });
-      mouseOver();
+      if (!isMouseOver) {
+        TweenMax.to(this.DOM.imgContainer, 0.4, {
+          scale: 1 + SCALE_FACTOR,
+          ease: Sine.easeOut,
+        });
+        mouseOver(this.imageNo);
+      }
     }
 
     // Mouse Out Function
     out() {
-      TweenMax.to(this.DOM.imgContainer, 0.3, {
-        scale: 1,
-        ease: Sine.easeIn,
-      });
-      mouseOut();
+      if (isMouseOver) {
+        TweenMax.to(this.DOM.imgContainer, 0.3, {
+          scale: 1,
+          ease: Sine.easeIn,
+        });
+        mouseOut();
+      }
     }
 
     // Change the speed of image
@@ -441,17 +482,51 @@ window.addEventListener("DOMContentLoaded", () => {
   // Animation Ends Here
 
   // Image Containers Mouse Hover Starts Here
-  function mouseOver() {
+  function mouseOver(no) {
+    isMouseOver = no;
     images.forEach((img) => {
       img.addFriction();
     });
   }
   function mouseOut() {
+    isMouseOver = null;
     images.forEach((img) => {
       img.changeSpeed(0);
     });
   }
   // Image Containers Mouse Hover Ends Here
+
+  // Mouse Tracking Starts Here
+  (function () {
+    document.onmousemove = handleMouseMove;
+    function handleMouseMove(event) {
+      var eventDoc, doc, body;
+
+      event = event || window.event; // IE-ism
+
+      // If pageX/Y aren't available and clientX/Y are,
+      // calculate pageX/Y - logic taken from jQuery.
+      // (This is to support old IE)
+      if (event.pageX == null && event.clientX != null) {
+        eventDoc = (event.target && event.target.ownerDocument) || document;
+        doc = eventDoc.documentElement;
+        body = eventDoc.body;
+
+        event.pageX =
+          event.clientX +
+          ((doc && doc.scrollLeft) || (body && body.scrollLeft) || 0) -
+          ((doc && doc.clientLeft) || (body && body.clientLeft) || 0);
+        event.pageY =
+          event.clientY +
+          ((doc && doc.scrollTop) || (body && body.scrollTop) || 0) -
+          ((doc && doc.clientTop) || (body && body.clientTop) || 0);
+      }
+
+      mouseX = event.pageX;
+      mouseY = event.pageY;
+    }
+  })();
+  // Mouse Tracking Ends Here
 
   // Wheel Tracking Code Starts Here
   window.addEventListener("DOMMouseScroll", wheel, false);
