@@ -6,14 +6,17 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const container = document.querySelector(".container");
 
+  // Animation Variable
+  let animation;
+
   // Reasonable defaults
   const PIXEL_STEP = 10;
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
-  const IDLE_SPEED = 1;
-  const FRICTION_COEFICIENT = 0.85;
-  const SCALE_FACTOR = 0.25;
-  const POSITION_BUFFER = 30;
+  const IDLE_SPEED = 1.5;
+  const FRICTION_COEFICIENT = 0.5;
+  const SCALE_FACTOR = 0.2;
+  const POSITION_BUFFER = 50;
 
   // Mouse event variables
   let oldMouseX = 0,
@@ -117,7 +120,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Initialising Variables
     init() {
-      this.startLocation = CLIENT_HEIGHT;
+      this.startLocation = CLIENT_HEIGHT - 40;
       this.buffer = POSITION_BUFFER;
       this.endLocation = this.startLocation;
       this.speed = 0;
@@ -258,7 +261,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       if (this.isVisible() && this.buffer > 0) {
-        this.buffer -= 5 * this.easing(this.buffer / POSITION_BUFFER);
+        this.buffer -= 4 * this.easing(this.buffer / POSITION_BUFFER);
       }
       // if (!this.isVisible() && this.buffer != POSITION_BUFFER)
       //   this.buffer = POSITION_BUFFER;
@@ -477,10 +480,10 @@ window.addEventListener("DOMContentLoaded", () => {
     images.forEach((img) => {
       img.animate();
     });
-    requestAnimationFrame(updater); // for subsequent frames
+    animation = requestAnimationFrame(updater); // for subsequent frames
   };
 
-  requestAnimationFrame(updater);
+  animation = requestAnimationFrame(updater);
   // Animation Ends Here
 
   // Image Containers Mouse Hover Starts Here
@@ -627,4 +630,20 @@ window.addEventListener("DOMContentLoaded", () => {
     return { spinX: sX, spinY: sY, pixelX: pX, pixelY: pY };
   }
   // Wheel Tracking Code Ends Here
+
+  // Heading Toggle Starts Here
+  const about = document.querySelector(".about");
+  const heading = document.querySelector(".heading");
+  const aboutHeading = document.querySelector(".about-heading");
+  heading.addEventListener("click", function () {
+    about.classList.add("show");
+    heading.style = "visibility: hidden;";
+    cancelAnimationFrame(animation);
+  });
+  aboutHeading.addEventListener("click", function () {
+    about.classList.remove("show");
+    heading.style = "visibility: visible;";
+    animation = requestAnimationFrame(updater);
+  });
+  // Heading Toggle Ends Here
 });
