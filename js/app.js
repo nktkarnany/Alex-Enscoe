@@ -13,8 +13,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const PIXEL_STEP = 10;
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
-  const IDLE_SPEED = 1.5;
-  const FRICTION_COEFICIENT = 0.5;
+  const IDLE_SPEED = 1;
+  const FRICTION_COEFICIENT = 0.35;
   const SCALE_FACTOR = 0.2;
   const POSITION_BUFFER = 50;
 
@@ -634,16 +634,35 @@ window.addEventListener("DOMContentLoaded", () => {
   // Heading Toggle Starts Here
   const about = document.querySelector(".about");
   const heading = document.querySelector(".heading");
-  const aboutHeading = document.querySelector(".about-heading");
-  heading.addEventListener("click", function () {
-    about.classList.add("show");
-    heading.style = "visibility: hidden;";
-    cancelAnimationFrame(animation);
-  });
-  aboutHeading.addEventListener("click", function () {
+
+  about.addEventListener("click", function (e) {
+    if (e.target !== this) return;
     about.classList.remove("show");
-    heading.style = "visibility: visible;";
-    animation = requestAnimationFrame(updater);
+  });
+
+  heading.addEventListener("click", function () {
+    const isShowing = about.classList.contains("show");
+
+    if (!isShowing) {
+      about.classList.add("show");
+
+      const tl = new TimelineMax();
+      tl.from(".about_text_p", 0.6, {
+        opacity: 0,
+        ease: Power2.easeOut,
+        stagger: 0.2,
+      })
+        .from(".description-links", 0.6, {
+          opacity: 0,
+          ease: Power2.easeOut,
+        })
+        .from(".about-footer", 0.6, {
+          opacity: 0,
+          ease: Power2.easeOut,
+        });
+    } else {
+      about.classList.remove("show");
+    }
   });
   // Heading Toggle Ends Here
 });
