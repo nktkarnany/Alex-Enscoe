@@ -649,16 +649,16 @@ window.addEventListener("DOMContentLoaded", () => {
       const tl = new TimelineMax();
       tl.from(".about_text_p", 0.6, {
         opacity: 0,
-        ease: Power2.easeOut,
-        stagger: 0.2,
+        ease: Power3.easeOut,
+        stagger: 0.25,
       })
         .from(".description-links", 0.6, {
           opacity: 0,
-          ease: Power2.easeOut,
+          ease: Power3.easeOut,
         })
         .from(".about-footer", 0.6, {
           opacity: 0,
-          ease: Power2.easeOut,
+          ease: Power3.easeOut,
         });
     } else {
       about.classList.remove("show");
