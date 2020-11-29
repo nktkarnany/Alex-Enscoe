@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const IDLE_SPEED = 1;
   const FRICTION_COEFICIENT = 0.35;
   const SCALE_FACTOR = 0.2;
-  const POSITION_BUFFER = 30;
+  const POSITION_BUFFER = 20;
 
   // Mouse event variables
   let oldMouseX = 0,
@@ -448,7 +448,7 @@ window.addEventListener("DOMContentLoaded", () => {
   function handleIntersection(entries) {
     entries.map((entry) => {
       if (entry.isIntersecting) {
-        if (entry.intersectionRatio > 0.85) {
+        if (entry.intersectionRatio > 0.7) {
           entry.target.dataset.visible = 1;
           entry.target.classList.add("visible");
         }
