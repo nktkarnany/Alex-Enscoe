@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const IDLE_SPEED = 1;
   const FRICTION_COEFICIENT = 0.35;
   const SCALE_FACTOR = 0.2;
-  const POSITION_BUFFER = 50;
+  const POSITION_BUFFER = 30;
 
   // Mouse event variables
   let oldMouseX = 0,
@@ -115,9 +115,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
       this.DOM.imgContainer.appendChild(this.DOM.img);
 
-      this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
+      // this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
 
-      this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
+      // this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
     }
 
     // Initialising Variables
@@ -171,16 +171,16 @@ window.addEventListener("DOMContentLoaded", () => {
         y: t,
         ease: Linear.easeNone,
       });
-      const isCollision = this.doesMouseCollide();
-      if (!isMouseMoving && this.isVisible() && isCollision) {
-        this.over();
-      }
-      if (isMouseOver == this.imageNo && !isCollision) {
-        this.out();
-      }
-      if (isMouseMoving && isMouseOver == this.imageNo && !isCollision) {
-        this.out();
-      }
+      // const isCollision = this.doesMouseCollide();
+      // if (!isMouseMoving && this.isVisible() && isCollision) {
+      //   this.over();
+      // }
+      // if (isMouseOver == this.imageNo && !isCollision) {
+      //   this.out();
+      // }
+      // if (isMouseMoving && isMouseOver == this.imageNo && !isCollision) {
+      //   this.out();
+      // }
     }
 
     // Checking if image container box collides with mouse pointer
@@ -448,7 +448,7 @@ window.addEventListener("DOMContentLoaded", () => {
   function handleIntersection(entries) {
     entries.map((entry) => {
       if (entry.isIntersecting) {
-        if (entry.intersectionRatio > 0.8) {
+        if (entry.intersectionRatio > 0.85) {
           entry.target.dataset.visible = 1;
           entry.target.classList.add("visible");
         }
@@ -634,37 +634,60 @@ window.addEventListener("DOMContentLoaded", () => {
   // Wheel Tracking Code Ends Here
 
   // Heading Toggle Starts Here
+  const overlay = document.querySelector(".overlay");
+
   const about = document.querySelector(".about");
   const heading = document.querySelector(".heading");
 
+  let isShowing = false;
+
   about.addEventListener("click", function (e) {
     if (e.target !== this) return;
-    about.classList.remove("show");
+    toggleAnimation();
   });
 
-  heading.addEventListener("click", function () {
-    const isShowing = about.classList.contains("show");
+  const tl = new TimelineMax({ paused: true });
 
+  tl.to(heading, 0.1, {
+    scale: 1.1,
+  })
+    .to(about, 0.3, {
+      visibility: "visible",
+      ease: Sine.easeOut,
+    })
+    .from(".about_text_p", 0.6, {
+      opacity: 0,
+      ease: Power3.easeOut,
+      stagger: 0.25,
+    })
+    .from(".description-links", 0.6, {
+      opacity: 0,
+      ease: Power3.easeOut,
+    })
+    .from(".about-footer", 0.6, {
+      opacity: 0,
+      ease: Power3.easeOut,
+    });
+
+  heading.addEventListener("click", toggleAnimation);
+
+  function toggleAnimation() {
     if (!isShowing) {
-      about.classList.add("show");
-
-      const tl = new TimelineMax();
-      tl.from(".about_text_p", 0.6, {
-        opacity: 0,
-        ease: Power3.easeOut,
-        stagger: 0.25,
-      })
-        .from(".description-links", 0.6, {
-          opacity: 0,
-          ease: Power3.easeOut,
-        })
-        .from(".about-footer", 0.6, {
-          opacity: 0,
-          ease: Power3.easeOut,
-        });
+      cancelAnimationFrame(animation);
+      overlay.classList.remove("close");
+      overlay.classList.add("open");
+      tl.timeScale(1).play(0);
+      isShowing = true;
     } else {
-      about.classList.remove("show");
+      animation = requestAnimationFrame(updater);
+      tl.timeScale(3)
+        .reverse()
+        .then(function () {
+          overlay.classList.remove("open");
+          overlay.classList.add("close");
+          isShowing = false;
+        });
     }
-  });
+  }
   // Heading Toggle Ends Here
 });
