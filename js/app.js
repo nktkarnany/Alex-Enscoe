@@ -26,14 +26,6 @@ window.addEventListener("DOMContentLoaded", () => {
   let isMouseMoving = false;
   let isMouseOver = null;
 
-  setInterval(() => {
-    if (oldMouseX != mouseX) isMouseMoving = true;
-    else if (oldMouseY != mouseY) isMouseMoving = true;
-    else isMouseMoving = false;
-    oldMouseX = mouseX;
-    oldMouseY = mouseY;
-  }, 300);
-
   // Wheel event variables
   let marker = true,
     delta,
@@ -115,9 +107,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
       this.DOM.imgContainer.appendChild(this.DOM.img);
 
-      // this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
+      this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
 
-      // this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
+      this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
     }
 
     // Initialising Variables
@@ -128,6 +120,7 @@ window.addEventListener("DOMContentLoaded", () => {
       this.speed = 0;
       this.position = 0;
       this.scale = 1;
+      this.hasSpeed = false;
     }
 
     // Creating the image container
@@ -166,21 +159,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Set the position from top
     setTop(t) {
-      // this.DOM.imgContainer.style.transform = `translateY(${t}px)`;
       TweenMax.to(this.DOM.imgContainer, 0, {
         y: t,
         ease: Linear.easeNone,
       });
-      // const isCollision = this.doesMouseCollide();
-      // if (!isMouseMoving && this.isVisible() && isCollision) {
-      //   this.over();
-      // }
-      // if (isMouseOver == this.imageNo && !isCollision) {
-      //   this.out();
-      // }
-      // if (isMouseMoving && isMouseOver == this.imageNo && !isCollision) {
-      //   this.out();
-      // }
+      if (this.hasSpeed) return;
+      const isVisible = this.isVisible();
+      const isCollision = this.doesMouseCollide();
+      if (!isMouseMoving && isVisible && isCollision) {
+        this.over();
+      }
+      if (isMouseOver == this.imageNo && !isCollision) {
+        this.out();
+      }
+      if (isMouseMoving && isMouseOver == this.imageNo && !isCollision) {
+        this.out();
+      }
     }
 
     // Checking if image container box collides with mouse pointer
@@ -218,7 +212,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Change the speed of image
     changeSpeed(speed) {
-      if (speed != 0) this.buffer = 0;
+      this.hasSpeed = false;
+      if (speed != 0) {
+        this.buffer = 0;
+        this.hasSpeed = true;
+      }
       if (speed == 0 && !this.isVisible()) this.buffer = POSITION_BUFFER;
       this.speed = speed;
     }
@@ -479,6 +477,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Animation Starts Here
   const updater = function () {
+    if (oldMouseX != mouseX) isMouseMoving = true;
+    else if (oldMouseY != mouseY) isMouseMoving = true;
+    else isMouseMoving = false;
+    oldMouseX = mouseX;
+    oldMouseY = mouseY;
+
     images.forEach((img) => {
       img.animate();
     });
@@ -646,25 +650,6 @@ window.addEventListener("DOMContentLoaded", () => {
     toggleAnimation();
   });
 
-  const tl = new TimelineMax({ paused: true });
-
-  // tl.to(heading, 0.1, {
-  //   scale: 1.1,
-  // })
-  //   .from(".about_text_p", 0.2, {
-  //     opacity: 0,
-  //     ease: Power3.easeOut,
-  //     stagger: 0.05,
-  //   })
-  //   .from(".description-links", 0.2, {
-  //     opacity: 0,
-  //     ease: Power3.easeOut,
-  //   })
-  //   .from(".about-footer", 0.2, {
-  //     opacity: 0,
-  //     ease: Power3.easeOut,
-  //   });
-
   heading.addEventListener("click", toggleAnimation);
 
   function toggleAnimation() {
@@ -673,7 +658,6 @@ window.addEventListener("DOMContentLoaded", () => {
       overlay.classList.remove("close");
       overlay.classList.add("open");
       heading.classList.add("expanded");
-      // tl.timeScale(1).play(0);
       isShowing = true;
     } else {
       animation = requestAnimationFrame(updater);
@@ -681,10 +665,6 @@ window.addEventListener("DOMContentLoaded", () => {
       overlay.classList.add("close");
       heading.classList.remove("expanded");
       isShowing = false;
-      // tl.timeScale(3)
-      //   .reverse()
-      //   .then(function () {
-      //   });
     }
   }
   // Heading Toggle Ends Here
