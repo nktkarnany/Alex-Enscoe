@@ -22,6 +22,14 @@
   font-weight: 400;
 }
 
+@font-face {
+  font-family: "Grosa";
+  src: url("./fonts/Grosa-Light.woff2") format("woff2"),
+    url("./fonts/Grosa-Light.woff") format("woff"),
+    url("./fonts/Grosa-Light.ttf") format("truetype");
+  font-weight: 300;
+}
+
 *,
 *::after,
 *::before {
@@ -122,7 +130,8 @@ main {
   margin: 0;
   cursor: pointer;
   visibility: visible;
-  transition: letter-spacing 0.3s ease-out;
+  letter-spacing: 1.2;
+  transition: letter-spacing 0.2s ease-out, font-weight 0.1s ease-out;
 }
 
 body.loaded .heading {
@@ -130,11 +139,13 @@ body.loaded .heading {
 }
 
 .heading:hover {
-  letter-spacing: 2;
+  letter-spacing: 3;
+  font-weight: 400;
 }
 
 .heading.expanded {
-  letter-spacing: 2;
+  letter-spacing: 3;
+  font-weight: 400;
 }
 
 .box-inner {
@@ -175,8 +186,6 @@ body.loaded .heading {
 /* Effects */
 .overlay-scale {
   visibility: hidden;
-  /* -webkit-transition: visibility 0.3s ease-out;
-  transition: visibility 0.3s ease-out; */
 }
 
 .overlay-scale.open {
@@ -201,24 +210,31 @@ body.loaded .heading {
   cursor: url("images/cancel.png"), auto;
 }
 
+.overlay-scale.open .description,
+.overlay-scale.open .about-footer {
+  cursor: initial;
+}
+
 .description {
   font-size: 3rem;
+  font-weight: 300;
   line-height: 1.167;
-  width: 62rem;
-  font-style: normal;
   letter-spacing: -1;
+  width: 62rem;
 }
 
 .description-links {
-  font-size: 2rem;
-  line-height: 1.72;
+  font-size: 0.875rem;
+  font-weight: 500;
   padding-top: 2rem;
+  text-transform: uppercase;
   display: flex;
   justify-content: center;
 }
 
 .alex-links {
-  text-decoration: underline;
+  padding: 1rem;
+  letter-spacing: 1;
 }
 
 .about_text {
@@ -238,4 +254,8 @@ body.loaded .heading {
 
 .our-links:hover {
   text-decoration: underline;
+}
+
+.our-links {
+  padding: 1rem 0;
 }
