@@ -648,26 +648,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const tl = new TimelineMax({ paused: true });
 
-  tl.to(heading, 0.1, {
-    scale: 1.1,
-  })
-    .to(about, 0.3, {
-      visibility: "visible",
-      ease: Sine.easeOut,
-    })
-    .from(".about_text_p", 0.6, {
-      opacity: 0,
-      ease: Power3.easeOut,
-      stagger: 0.25,
-    })
-    .from(".description-links", 0.6, {
-      opacity: 0,
-      ease: Power3.easeOut,
-    })
-    .from(".about-footer", 0.6, {
-      opacity: 0,
-      ease: Power3.easeOut,
-    });
+  // tl.to(heading, 0.1, {
+  //   scale: 1.1,
+  // })
+  //   .from(".about_text_p", 0.2, {
+  //     opacity: 0,
+  //     ease: Power3.easeOut,
+  //     stagger: 0.05,
+  //   })
+  //   .from(".description-links", 0.2, {
+  //     opacity: 0,
+  //     ease: Power3.easeOut,
+  //   })
+  //   .from(".about-footer", 0.2, {
+  //     opacity: 0,
+  //     ease: Power3.easeOut,
+  //   });
 
   heading.addEventListener("click", toggleAnimation);
 
@@ -676,18 +672,38 @@ window.addEventListener("DOMContentLoaded", () => {
       cancelAnimationFrame(animation);
       overlay.classList.remove("close");
       overlay.classList.add("open");
-      tl.timeScale(1).play(0);
+      heading.classList.add("expanded");
+      // tl.timeScale(1).play(0);
       isShowing = true;
     } else {
       animation = requestAnimationFrame(updater);
-      tl.timeScale(3)
-        .reverse()
-        .then(function () {
-          overlay.classList.remove("open");
-          overlay.classList.add("close");
-          isShowing = false;
-        });
+      overlay.classList.remove("open");
+      overlay.classList.add("close");
+      heading.classList.remove("expanded");
+      isShowing = false;
+      // tl.timeScale(3)
+      //   .reverse()
+      //   .then(function () {
+      //   });
     }
   }
   // Heading Toggle Ends Here
+
+  // Preloader Animation Starts Here
+  // const preloaderTl = new TimelineMax({ paused: true });
+
+  // preloaderTl.from(".loading-text", 2, {
+  //   top: "50%",
+  //   y: "-50%",
+  //   scale: 3,
+  // });
+
+  // document.body.classList.remove("loading");
+  // window.setTimeout(function () {
+  //   preloaderTl.play(0).then(function () {
+  //     document.body.classList.remove("loaded");
+  //     animation = requestAnimationFrame(updater);
+  //   });
+  // }, 3000);
+  // Preloader Animation Ends Here
 });
