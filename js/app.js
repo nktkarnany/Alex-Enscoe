@@ -16,8 +16,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
   const IDLE_SPEED = 1;
-  const FRICTION_COEFICIENT = 0.35;
-  const SCALE_FACTOR = 0.2;
+  const FRICTION_COEFICIENT = 0.6;
+  const SCALE_FACTOR = 0.6;
   const POSITION_BUFFER = 20;
 
   // Mouse event variables
