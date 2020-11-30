@@ -6,6 +6,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const container = document.querySelector(".container");
 
+  const lightbox = document.querySelector(".lightbox");
+
   // Animation Variable
   let animation;
 
@@ -110,6 +112,13 @@ window.addEventListener("DOMContentLoaded", () => {
       this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
 
       this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
+
+      this.DOM.imgContainer.addEventListener("click", () => {
+        lightbox.querySelector(".img-container").innerHTML = "";
+        lightbox.querySelector(".img-container").appendChild(this.image());
+        lightbox.classList.add("open");
+        stopAnimation();
+      });
     }
 
     // Initialising Variables
@@ -489,7 +498,7 @@ window.addEventListener("DOMContentLoaded", () => {
     animation = requestAnimationFrame(updater); // for subsequent frames
   };
 
-  animation = requestAnimationFrame(updater);
+  startAnimation();
   // Animation Ends Here
 
   // Image Containers Mouse Hover Starts Here
@@ -654,13 +663,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function toggleAnimation() {
     if (!isShowing) {
-      cancelAnimationFrame(animation);
+      stopAnimation();
       overlay.classList.remove("close");
       overlay.classList.add("open");
       heading.classList.add("expanded");
       isShowing = true;
     } else {
-      animation = requestAnimationFrame(updater);
+      startAnimation();
       overlay.classList.remove("open");
       overlay.classList.add("close");
       heading.classList.remove("expanded");
@@ -686,4 +695,18 @@ window.addEventListener("DOMContentLoaded", () => {
   //   });
   // }, 3000);
   // Preloader Animation Ends Here
+
+  lightbox.addEventListener("click", function (e) {
+    if (e.target !== this) return;
+    lightbox.classList.remove("open");
+    startAnimation();
+  });
+
+  function stopAnimation() {
+    cancelAnimationFrame(animation);
+  }
+
+  function startAnimation() {
+    animation = requestAnimationFrame(updater);
+  }
 });
