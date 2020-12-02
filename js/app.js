@@ -37,6 +37,8 @@ window.addEventListener("DOMContentLoaded", () => {
     counter2,
     event;
 
+  let isMobile = false;
+
   const images = [];
 
   class Box {
@@ -286,153 +288,317 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  let sections = [
-    {
-      box: new Box(10, 12, 3, 12), // Box Params: Col Start, Col Span, Row Start, Row Span
-      imgs: [
-        new Img(1, 12, 1, 20, 1, 1), // Img Params: Col Start, Col Span, Row Start, Row Span, Img Src, Speed, Z-Index
-        new Img(14, 10, 10, 14, 2, 1),
-      ],
-    },
-    {
-      box: new Box(33, 15, 4, 15),
-      imgs: [
-        new Img(1, 9, 1, 8, 3, 1),
-        new Img(22, 8, 2, 10, 4, 1),
-        new Img(9, 10, 9, 14, 5, 1),
-        new Img(5, 7, 22, 9, 6, 1),
-      ],
-    },
-    {
-      box: new Box(3, 13, 21, 10),
-      imgs: [
-        new Img(11, 9, 1, 10, 7, 2),
-        new Img(1, 11, 7, 12, 8, 1),
-        new Img(15, 12, 11, 10, 9, 1),
-      ],
-    },
-    {
-      box: new Box(27, 5, 24, 9),
-      imgs: [new Img(1, 10, 2, 18, 10, 1)],
-    },
-    {
-      box: new Box(36, 9, 38, 8),
-      imgs: [new Img(1, 9, 4, 13, 11, 1), new Img(11, 7, 1, 12, 12, 1)],
-    },
-    {
-      box: new Box(8, 10, 44, 11),
-      imgs: [new Img(7, 13, 1, 12, 13, 2), new Img(1, 15, 9, 14, 14, 1)],
-    },
-    {
-      box: new Box(25, 4, 50, 5),
-      imgs: [new Img(2, 7, 2, 8, 15, 1)],
-    },
-    {
-      box: new Box(35, 13, 55, 13),
-      imgs: [
-        new Img(15, 11, 1, 13, 16, 1),
-        new Img(1, 10, 8, 12, 17, 1),
-        new Img(12, 8, 14, 12, 18, 1),
-      ],
-    },
-    {
-      box: new Box(15, 12, 65, 8),
-      imgs: [new Img(1, 11, 1, 12, 19, 1), new Img(13, 11, 4, 12, 20, 1)],
-    },
-    {
-      box: new Box(2, 13, 79, 15),
-      imgs: [
-        new Img(3, 13, 1, 16, 21, 2),
-        new Img(13, 13, 13, 12, 22, 1),
-        new Img(1, 7, 19, 12, 24, 1),
-      ],
-    },
-    {
-      box: new Box(28, 10, 82, 6),
-      imgs: [new Img(2, 9, 1, 12, 23, 1)],
-    },
-    {
-      box: new Box(38, 10, 91, 21),
-      imgs: [
-        new Img(11, 9, 2, 14, 25, 2),
-        new Img(1, 12, 13, 18, 26, 1),
-        new Img(6, 12, 32, 12, 29, 1),
-      ],
-    },
-    {
-      box: new Box(12, 13, 101, 10),
-      imgs: [new Img(1, 15, 1, 16, 27, 1), new Img(18, 8, 8, 14, 28, 1)],
-    },
-    {
-      box: new Box(4, 4, 121, 6),
-      imgs: [new Img(1, 7, 2, 10, 31, 1)],
-    },
-    {
-      box: new Box(32, 5, 117, 7),
-      imgs: [new Img(1, 9, 2, 12, 30, 1)],
-    },
-    {
-      box: new Box(10, 12, 129, 17),
-      imgs: [
-        new Img(7, 12, 2, 12, 32, 2),
-        new Img(1, 8, 12, 14, 35, 1),
-        new Img(10, 14, 22, 14, 36, 1),
-      ],
-    },
-    {
-      box: new Box(35, 12, 130, 9),
-      imgs: [new Img(13, 12, 2, 10, 33, 1), new Img(1, 10, 7, 12, 34, 1)],
-    },
-    {
-      box: new Box(30, 16, 148, 10),
-      imgs: [
-        new Img(10, 11, 2, 10, 37, 2),
-        new Img(1, 14, 10, 10, 38, 1),
-        new Img(23, 9, 6, 14, 39, 1),
-      ],
-    },
-    {
-      box: new Box(3, 11, 155, 11),
-      imgs: [new Img(12, 11, 1, 16, 40, 1), new Img(1, 10, 12, 12, 41, 1)],
-    },
-    {
-      box: new Box(21, 5, 166, 7),
-      imgs: [new Img(1, 9, 2, 14, 42, 1)],
-    },
-    {
-      box: new Box(35, 11, 169, 16),
-      imgs: [
-        new Img(16, 7, 1, 10, 43, 1),
-        new Img(1, 7, 8, 10, 44, 1),
-        new Img(13, 9, 17, 8, 45, 2),
-        new Img(3, 11, 22, 12, 47, 1),
-      ],
-    },
-    {
-      box: new Box(2, 5, 179, 7),
-      imgs: [new Img(1, 9, 2, 14, 46, 1)],
-    },
-    {
-      box: new Box(13, 17, 188, 12),
-      imgs: [
-        new Img(6, 10, 2, 14, 48, 1),
-        new Img(19, 15, 8, 14, 49, 1),
-        new Img(2, 10, 12, 14, 50, 1),
-      ],
-    },
-    {
-      box: new Box(36, 12, 201, 10),
-      imgs: [new Img(1, 9, 2, 14, 51, 1), new Img(12, 12, 7, 14, 52, 1)],
-    },
-    {
-      box: new Box(3, 6, 209, 5),
-      imgs: [new Img(1, 11, 2, 10, 53, 1)],
-    },
-    {
-      box: new Box(24, 10, 213, 7),
-      imgs: [new Img(1, 9, 1, 14, 54, 1)],
-    },
-  ];
+  const mobileMediaQuery = window.matchMedia(
+    "(min-device-width : 320px) and (max-device-width : 480px)"
+  );
+
+  function checkSize(e) {
+    if (e.matches) {
+      isMobile = true;
+    }
+  }
+
+  checkSize(mobileMediaQuery);
+
+  let sections;
+
+  if (isMobile) {
+    sections = [
+      {
+        box: new Box(3, 21, 5, 17), // Box Params: Col Start, Col Span, Row Start, Row Span
+        imgs: [
+          new Img(1, 26, 2, 23, 1, 1), // Img Params: Col Start, Col Span, Row Start, Row Span, Img Src, Speed, Z-Index
+          new Img(23, 20, 18, 16, 2, 2),
+        ],
+      },
+      {
+        box: new Box(2, 23, 26, 23),
+        imgs: [
+          new Img(1, 20, 16, 10, 3, 1),
+          new Img(10, 19, 2, 12, 4, 1),
+          new Img(25, 21, 22, 16, 5, 1),
+          new Img(7, 16, 34, 12, 6, 1),
+        ],
+      },
+      {
+        box: new Box(2, 22, 56, 16),
+        imgs: [
+          new Img(21, 18, 2, 10, 7, 2),
+          new Img(1, 23, 8, 12, 8, 1),
+          new Img(19, 26, 21, 12, 9, 1),
+        ],
+      },
+      {
+        box: new Box(4, 11, 79, 10),
+        imgs: [new Img(1, 21, 2, 19, 10, 1)],
+      },
+      {
+        box: new Box(2, 21, 93, 14),
+        imgs: [new Img(14, 27, 1, 12, 13, 1), new Img(1, 33, 11, 17, 14, 1)],
+      },
+      {
+        box: new Box(15, 9, 108, 6),
+        imgs: [new Img(2, 17, 1, 11, 15, 1)],
+      },
+      {
+        box: new Box(2, 20, 119, 9),
+        imgs: [new Img(1, 19, 4, 15, 11, 1), new Img(23, 15, 2, 14, 12, 1)],
+      },
+      {
+        box: new Box(4, 20, 135, 23),
+        imgs: [
+          new Img(2, 21, 2, 14, 17, 1),
+          new Img(18, 23, 18, 16, 16, 1),
+          new Img(6, 18, 32, 16, 18, 1),
+        ],
+      },
+      {
+        box: new Box(2, 22, 166, 12),
+        imgs: [new Img(1, 22, 2, 12, 19, 1), new Img(21, 23, 10, 14, 20, 1)],
+      },
+      {
+        box: new Box(7, 10, 185, 7),
+        imgs: [new Img(2, 18, 2, 13, 23, 1)],
+      },
+      {
+        box: new Box(2, 22, 197, 22),
+        imgs: [
+          new Img(5, 29, 2, 20, 21, 1),
+          new Img(1, 15, 24, 14, 24, 1),
+          new Img(15, 29, 30, 14, 22, 2),
+        ],
+      },
+      {
+        box: new Box(2, 22, 226, 22),
+        imgs: [
+          new Img(25, 19, 2, 17, 25, 2),
+          new Img(3, 25, 8, 22, 26, 1),
+          new Img(16, 26, 32, 13, 29, 1),
+        ],
+      },
+      {
+        box: new Box(2, 21, 254, 18),
+        imgs: [new Img(12, 30, 2, 18, 27, 1), new Img(3, 17, 22, 15, 28, 1)],
+      },
+      {
+        box: new Box(9, 10, 277, 8),
+        imgs: [new Img(2, 18, 2, 14, 30, 1)],
+      },
+      {
+        box: new Box(5, 9, 283, 7),
+        imgs: [new Img(2, 16, 2, 12, 31, 1)],
+      },
+      {
+        box: new Box(2, 21, 295, 23),
+        imgs: [
+          new Img(12, 26, 2, 14, 32, 2),
+          new Img(1, 18, 14, 16, 35, 1),
+          new Img(14, 28, 32, 14, 36, 1),
+        ],
+      },
+      {
+        box: new Box(4, 20, 324, 13),
+        imgs: [new Img(2, 22, 2, 14, 34, 2), new Img(13, 26, 14, 12, 33, 1)],
+      },
+      {
+        box: new Box(2, 22, 342, 19),
+        imgs: [
+          new Img(25, 20, 1, 17, 39, 1),
+          new Img(1, 30, 14, 12, 38, 2),
+          new Img(21, 24, 26, 12, 37, 1),
+        ],
+      },
+      {
+        box: new Box(3, 19, 365, 18),
+        imgs: [new Img(2, 21, 2, 13, 41, 1), new Img(14, 24, 16, 20, 40, 1)],
+      },
+      {
+        box: new Box(7, 10, 388, 8),
+        imgs: [new Img(2, 18, 2, 14, 42, 1)],
+      },
+      {
+        box: new Box(2, 22, 403, 21),
+        imgs: [
+          new Img(28, 16, 2, 13, 43, 1),
+          new Img(1, 15, 10, 13, 44, 1),
+          new Img(25, 19, 22, 9, 45, 2),
+          new Img(5, 25, 28, 14, 47, 1),
+        ],
+      },
+      {
+        box: new Box(12, 10, 430, 9),
+        imgs: [new Img(1, 19, 2, 15, 46, 1)],
+      },
+      {
+        box: new Box(2, 16, 441, 8),
+        imgs: [new Img(2, 31, 2, 15, 49, 1)],
+      },
+      {
+        box: new Box(7, 17, 453, 14),
+        imgs: [new Img(13, 31, 2, 15, 48, 1), new Img(2, 18, 14, 14, 50, 2)],
+      },
+      {
+        box: new Box(3, 22, 471, 18),
+        imgs: [new Img(18, 26, 2, 16, 52, 1), new Img(4, 19, 20, 17, 51, 1)],
+      },
+      {
+        box: new Box(10, 13, 493, 6),
+        imgs: [new Img(2, 24, 2, 11, 53, 1)],
+      },
+      {
+        box: new Box(6, 11, 503, 10),
+        imgs: [new Img(2, 20, 2, 18, 54, 1)],
+      },
+    ];
+  } else {
+    sections = [
+      {
+        box: new Box(10, 12, 3, 12), // Box Params: Col Start, Col Span, Row Start, Row Span
+        imgs: [
+          new Img(1, 12, 1, 20, 1, 1), // Img Params: Col Start, Col Span, Row Start, Row Span, Img Src, Speed, Z-Index
+          new Img(14, 10, 10, 14, 2, 1),
+        ],
+      },
+      {
+        box: new Box(33, 15, 4, 15),
+        imgs: [
+          new Img(1, 9, 1, 8, 3, 1),
+          new Img(22, 8, 2, 10, 4, 1),
+          new Img(9, 10, 9, 14, 5, 1),
+          new Img(5, 7, 22, 9, 6, 1),
+        ],
+      },
+      {
+        box: new Box(3, 13, 21, 10),
+        imgs: [
+          new Img(11, 9, 1, 10, 7, 2),
+          new Img(1, 11, 7, 12, 8, 1),
+          new Img(15, 12, 11, 10, 9, 1),
+        ],
+      },
+      {
+        box: new Box(27, 5, 24, 9),
+        imgs: [new Img(1, 10, 2, 18, 10, 1)],
+      },
+      {
+        box: new Box(36, 9, 38, 8),
+        imgs: [new Img(1, 9, 4, 13, 11, 1), new Img(11, 7, 1, 12, 12, 1)],
+      },
+      {
+        box: new Box(8, 10, 44, 11),
+        imgs: [new Img(7, 13, 1, 12, 13, 2), new Img(1, 15, 9, 14, 14, 1)],
+      },
+      {
+        box: new Box(25, 4, 50, 5),
+        imgs: [new Img(2, 7, 2, 8, 15, 1)],
+      },
+      {
+        box: new Box(35, 13, 55, 13),
+        imgs: [
+          new Img(15, 11, 1, 13, 16, 1),
+          new Img(1, 10, 8, 12, 17, 1),
+          new Img(12, 8, 14, 12, 18, 1),
+        ],
+      },
+      {
+        box: new Box(15, 12, 65, 8),
+        imgs: [new Img(1, 11, 1, 12, 19, 1), new Img(13, 11, 4, 12, 20, 1)],
+      },
+      {
+        box: new Box(2, 13, 79, 15),
+        imgs: [
+          new Img(3, 13, 1, 16, 21, 2),
+          new Img(13, 13, 13, 12, 22, 1),
+          new Img(1, 7, 19, 12, 24, 1),
+        ],
+      },
+      {
+        box: new Box(28, 10, 82, 6),
+        imgs: [new Img(2, 9, 1, 12, 23, 1)],
+      },
+      {
+        box: new Box(38, 10, 91, 21),
+        imgs: [
+          new Img(11, 9, 2, 14, 25, 2),
+          new Img(1, 12, 13, 18, 26, 1),
+          new Img(6, 12, 32, 12, 29, 1),
+        ],
+      },
+      {
+        box: new Box(12, 13, 101, 10),
+        imgs: [new Img(1, 15, 1, 16, 27, 1), new Img(18, 8, 8, 14, 28, 1)],
+      },
+      {
+        box: new Box(4, 4, 121, 6),
+        imgs: [new Img(1, 7, 2, 10, 31, 1)],
+      },
+      {
+        box: new Box(32, 5, 117, 7),
+        imgs: [new Img(1, 9, 2, 12, 30, 1)],
+      },
+      {
+        box: new Box(10, 12, 129, 17),
+        imgs: [
+          new Img(7, 12, 2, 12, 32, 2),
+          new Img(1, 8, 12, 14, 35, 1),
+          new Img(10, 14, 22, 14, 36, 1),
+        ],
+      },
+      {
+        box: new Box(35, 12, 130, 9),
+        imgs: [new Img(13, 12, 2, 10, 33, 1), new Img(1, 10, 7, 12, 34, 1)],
+      },
+      {
+        box: new Box(30, 16, 148, 10),
+        imgs: [
+          new Img(10, 11, 2, 10, 37, 2),
+          new Img(1, 14, 10, 10, 38, 1),
+          new Img(23, 9, 6, 14, 39, 1),
+        ],
+      },
+      {
+        box: new Box(3, 11, 155, 11),
+        imgs: [new Img(12, 11, 1, 16, 40, 1), new Img(1, 10, 12, 12, 41, 1)],
+      },
+      {
+        box: new Box(21, 5, 166, 7),
+        imgs: [new Img(1, 9, 2, 14, 42, 1)],
+      },
+      {
+        box: new Box(35, 11, 169, 16),
+        imgs: [
+          new Img(16, 7, 1, 10, 43, 1),
+          new Img(1, 7, 8, 10, 44, 1),
+          new Img(13, 9, 17, 8, 45, 2),
+          new Img(3, 11, 22, 12, 47, 1),
+        ],
+      },
+      {
+        box: new Box(2, 5, 179, 7),
+        imgs: [new Img(1, 9, 2, 14, 46, 1)],
+      },
+      {
+        box: new Box(13, 17, 188, 12),
+        imgs: [
+          new Img(6, 10, 2, 14, 48, 1),
+          new Img(19, 15, 8, 14, 49, 1),
+          new Img(2, 10, 12, 14, 50, 1),
+        ],
+      },
+      {
+        box: new Box(36, 12, 201, 10),
+        imgs: [new Img(1, 9, 2, 14, 51, 1), new Img(12, 12, 7, 14, 52, 1)],
+      },
+      {
+        box: new Box(3, 6, 209, 5),
+        imgs: [new Img(1, 11, 2, 10, 53, 1)],
+      },
+      {
+        box: new Box(24, 10, 213, 7),
+        imgs: [new Img(1, 9, 1, 14, 54, 1)],
+      },
+    ];
+  }
 
   // Checking image container viewport starts here
   const observer = new IntersectionObserver(handleIntersection, {
