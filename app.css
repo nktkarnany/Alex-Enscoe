@@ -118,6 +118,16 @@ main {
   overflow: hidden;
 }
 
+.gradient {
+  width: 100%;
+  height: 90px;
+  z-index: 5;
+  position: fixed;
+  top: 0;
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
+  transform: matrix(-1, 0, 0, 1, 0, 0);
+}
+
 @media only screen and (max-width: 768px) {
   .container {
     grid-template-columns: repeat(24, 1fr);
@@ -161,6 +171,7 @@ body.loaded .heading {
   will-change: transform;
   opacity: 0;
   transition: opacity 0.8s ease-out;
+  cursor: pointer;
 }
 
 .img-container.visible {
@@ -184,25 +195,33 @@ body.loaded .heading {
   top: 0;
   left: 0;
   z-index: 20;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(0);
   visibility: hidden;
   background-color: rgba(255, 255, 255, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: visibility 0.4s ease-out, backdrop-filter 0.4s ease-out;
 }
 
 .lightbox .img-container {
-  width: 30%;
-  opacity: 1;
+  height: 50vh;
+  opacity: 0;
+  transition: opacity 0.4s 0.4s ease-out;
 }
 
 .lightbox .img-container img {
-  width: 100%;
+  height: 100%;
+  width: auto;
 }
 
 .lightbox.open {
   visibility: visible;
+  backdrop-filter: blur(8px);
+}
+
+.lightbox.open .img-container {
+  opacity: 1;
 }
 
 /* .lightbox.open {
