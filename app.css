@@ -137,7 +137,7 @@ main {
   margin: 0;
   cursor: pointer;
   visibility: visible;
-  letter-spacing: 1.2;
+  letter-spacing: 0.1;
   transition: letter-spacing 0.2s ease-out, font-weight 0.1s ease-out;
 }
 

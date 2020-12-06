@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
   const IDLE_SPEED = 1;
-  const FRICTION_COEFICIENT = 0.6;
+  const FRICTION_COEFICIENT = 0.4;
   const SCALE_FACTOR = 0.6;
   const POSITION_BUFFER = 20;
 
@@ -27,6 +27,14 @@ window.addEventListener("DOMContentLoaded", () => {
     mouseY = 0;
   let isMouseMoving = false;
   let isMouseOver = null;
+
+  setInterval(() => {
+    if (oldMouseX != mouseX) isMouseMoving = true;
+    else if (oldMouseY != mouseY) isMouseMoving = true;
+    else isMouseMoving = false;
+    oldMouseX = mouseX;
+    oldMouseY = mouseY;
+  }, 300);
 
   // Wheel event variables
   let marker = true,
@@ -111,9 +119,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
       this.DOM.imgContainer.appendChild(this.DOM.img);
 
-      this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
+      // this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
 
-      this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
+      // this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
 
       this.DOM.imgContainer.addEventListener("click", () => {
         lightbox.querySelector(".img-container").innerHTML = "";
@@ -174,18 +182,20 @@ window.addEventListener("DOMContentLoaded", () => {
         y: t,
         ease: Linear.easeNone,
       });
-      if (this.hasSpeed) return;
-      const isVisible = this.isVisible();
-      const isCollision = this.doesMouseCollide();
-      if (!isMouseMoving && isVisible && isCollision) {
-        this.over();
-      }
-      if (isMouseOver == this.imageNo && !isCollision) {
-        this.out();
-      }
-      if (isMouseMoving && isMouseOver == this.imageNo && !isCollision) {
-        this.out();
-      }
+      // if (this.hasSpeed) {
+      //   this.out();
+      //   return;
+      // }
+      // if (this.isVisible()) {
+      //   if (this.imageNo == 1) console.log(this.doesMouseCollide());
+      //   if (this.doesMouseCollide()) {
+      //     this.over();
+      //   } else {
+      //     this.out();
+      //   }
+      // } else {
+      //   this.out();
+      // }
     }
 
     // Checking if image container box collides with mouse pointer
@@ -201,24 +211,24 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Mouse Over Function
     over() {
-      if (!isMouseOver) {
-        TweenMax.to(this.DOM.imgContainer, 0.4, {
-          scale: 1 + SCALE_FACTOR,
-          ease: Sine.easeOut,
-        });
-        mouseOver(this.imageNo);
-      }
+      // if (!isMouseOver) {
+      //   TweenMax.to(this.DOM.imgContainer, 0.6, {
+      //     scale: 1 + SCALE_FACTOR,
+      //     ease: Sine.easeOut,
+      //   });
+      //   mouseOver(this.imageNo);
+      // }
     }
 
     // Mouse Out Function
     out() {
-      if (isMouseOver) {
-        TweenMax.to(this.DOM.imgContainer, 0.3, {
-          scale: 1,
-          ease: Sine.easeIn,
-        });
-        mouseOut();
-      }
+      // if (isMouseOver) {
+      //   TweenMax.to(this.DOM.imgContainer, 0.3, {
+      //     scale: 1,
+      //     ease: Sine.easeIn,
+      //   });
+      //   mouseOut();
+      // }
     }
 
     // Change the speed of image
@@ -652,12 +662,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Animation Starts Here
   const updater = function () {
-    if (oldMouseX != mouseX) isMouseMoving = true;
-    else if (oldMouseY != mouseY) isMouseMoving = true;
-    else isMouseMoving = false;
-    oldMouseX = mouseX;
-    oldMouseY = mouseY;
-
     images.forEach((img) => {
       img.animate();
     });
