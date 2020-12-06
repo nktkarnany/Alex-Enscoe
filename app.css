@@ -323,3 +323,19 @@ body.loaded .heading {
 .our-links {
   padding: 1rem 0;
 }
+
+@media screen and (min-device-width: 320px) and (max-device-width: 480px) {
+  .lightbox .img-container {
+    height: 30vh;
+  }
+
+  .description {
+    font-size: 1.2rem;
+  }
+
+  .about-footer {
+    left: 0;
+    transform: translateX(0);
+    padding: 0.75rem;
+  }
+}
