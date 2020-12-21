@@ -6,8 +6,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const container = document.querySelector(".container");
 
-  const lightbox = document.querySelector(".lightbox");
-
   // Animation Variable
   let animation;
 
@@ -30,7 +28,21 @@ window.addEventListener("DOMContentLoaded", () => {
 
   let isMobile = false;
 
-  let imgHovered = null;
+  // Mouse event variables
+  let oldMouseX = 0,
+    mouseX = 0;
+  let oldMouseY = 0,
+    mouseY = 0;
+  let isMouseMoving = false;
+  let isMouseOver = null;
+
+  // setInterval(() => {
+  //   if (oldMouseX != mouseX) isMouseMoving = true;
+  //   else if (oldMouseY != mouseY) isMouseMoving = true;
+  //   else isMouseMoving = false;
+  //   oldMouseX = mouseX;
+  //   oldMouseY = mouseY;
+  // }, 300);
 
   const images = [];
 
@@ -161,23 +173,36 @@ window.addEventListener("DOMContentLoaded", () => {
       this.removeBlur();
     }
 
+    // Checking if image container box collides with mouse pointer
+    doesMouseCollide() {
+      const {
+        top,
+        left,
+        right,
+        bottom,
+      } = this.DOM.imgContainer.getBoundingClientRect();
+      return mouseX > left && mouseX < right && mouseY < bottom && mouseY > top;
+    }
+
     // Mouse Over Function
     over() {
-      imgHovered = this.imageNo;
+      if (this.hasSpeed) return;
+      isMouseOver = this.imageNo;
       mouseOver();
     }
 
     // Mouse Out Function
     out() {
-      imgHovered = null;
+      if (this.hasSpeed) return;
+      isMouseOver = null;
       mouseOut();
     }
 
     addBlur() {
-      if (imgHovered != this.imageNo) {
+      if (isMouseOver != this.imageNo) {
         TweenMax.to(this.DOM.imgContainer, 0.5, {
-          filter: "blur(8px)",
-          ease: Power2.easeOut,
+          filter: "blur(5px)",
+          ease: Power3.easeOut,
         });
       }
     }
@@ -191,7 +216,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // Change the speed of image
     changeSpeed(speed) {
-      if (speed != 0) this.buffer = 0;
+      this.hasSpeed = false;
+      if (speed != 0) {
+        this.buffer = 0;
+        this.hasSpeed = true;
+      }
       if (speed == 0 && !this.isVisible()) this.buffer = POSITION_BUFFER;
       this.speed = speed;
     }
@@ -616,7 +645,12 @@ window.addEventListener("DOMContentLoaded", () => {
     animation = requestAnimationFrame(updater); // for subsequent frames
   };
 
-  startAnimation();
+  setTimeout(function () {
+    const body = document.querySelector("body");
+    body.classList.remove("loading");
+    body.classList.add("loaded");
+    startAnimation();
+  }, 500);
   // Animation Ends Here
 
   // Image Containers Mouse Hover Starts Here
@@ -624,15 +658,6 @@ window.addEventListener("DOMContentLoaded", () => {
     stopAnimation();
     images.forEach((img) => {
       img.addBlur();
-      // TweenMax.to(this.DOM.img, 0.8, {
-      //   scale: 1 + SCALE_FACTOR,
-      //   ease: Sine.easeOut,
-      // });
-
-      // TweenMax.to(this.DOM.img, 0.3, {
-      //   scale: 1,
-      //   ease: Power2.easeIn,
-      // });
     });
   }
   function mouseOut() {
@@ -642,6 +667,38 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
   // Image Containers Mouse Hover Ends Here
+
+  // Mouse Tracking Starts Here
+  (function () {
+    document.onmousemove = handleMouseMove;
+    function handleMouseMove(event) {
+      var eventDoc, doc, body;
+
+      event = event || window.event; // IE-ism
+
+      // If pageX/Y aren't available and clientX/Y are,
+      // calculate pageX/Y - logic taken from jQuery.
+      // (This is to support old IE)
+      if (event.pageX == null && event.clientX != null) {
+        eventDoc = (event.target && event.target.ownerDocument) || document;
+        doc = eventDoc.documentElement;
+        body = eventDoc.body;
+
+        event.pageX =
+          event.clientX +
+          ((doc && doc.scrollLeft) || (body && body.scrollLeft) || 0) -
+          ((doc && doc.clientLeft) || (body && body.clientLeft) || 0);
+        event.pageY =
+          event.clientY +
+          ((doc && doc.scrollTop) || (body && body.scrollTop) || 0) -
+          ((doc && doc.clientTop) || (body && body.clientTop) || 0);
+      }
+
+      mouseX = event.pageX;
+      mouseY = event.pageY;
+    }
+  })();
+  // Mouse Tracking Ends Here
 
   // Wheel Tracking Code Starts Here
   window.addEventListener("DOMMouseScroll", wheel, false);
@@ -741,43 +798,32 @@ window.addEventListener("DOMContentLoaded", () => {
   }
   // Wheel Tracking Code Ends Here
 
-  // Heading Toggle Starts Here
-  const overlay = document.querySelector(".overlay");
-
-  const about = document.querySelector(".about");
-  const heading = document.querySelector(".heading");
+  // Info Toggle Starts Here
 
   let isShowing = false;
 
-  about.addEventListener("click", function (e) {
+  const info = document.querySelector(".info");
+  info.addEventListener("click", function (e) {
     if (e.target !== this) return;
     toggleAnimation();
   });
 
+  const heading = document.querySelector(".info-heading");
   heading.addEventListener("click", toggleAnimation);
 
   function toggleAnimation() {
     if (!isShowing) {
       stopAnimation();
-      overlay.classList.remove("close");
-      overlay.classList.add("open");
-      heading.classList.add("expanded");
+      info.classList.add("show");
       isShowing = true;
     } else {
       startAnimation();
-      overlay.classList.remove("open");
-      overlay.classList.add("close");
-      heading.classList.remove("expanded");
+      info.classList.remove("show");
       isShowing = false;
     }
   }
-  // Heading Toggle Ends Here
 
-  lightbox.addEventListener("click", function (e) {
-    if (e.target !== this) return;
-    lightbox.classList.remove("open");
-    startAnimation();
-  });
+  // Info Toggle Ends Here
 
   function stopAnimation() {
     cancelAnimationFrame(animation);
