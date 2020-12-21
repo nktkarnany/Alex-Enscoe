@@ -179,12 +179,17 @@ body.loaded .heading {
 }
 
 .img-container:hover {
-  z-index: 3;
+  z-index: 3 !important;
 }
 
 .img-container img {
   width: 100%;
   position: relative;
+  transition: transform 0.3s ease-out;
+}
+
+.img-container img:hover {
+  transform: scale(1.2);
 }
 
 /* Lightbox style */
