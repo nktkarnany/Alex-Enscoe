@@ -16,8 +16,26 @@ window.addEventListener("DOMContentLoaded", () => {
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
   const IDLE_SPEED = 1;
+  const FRICTION_COEFICIENT = 0.6;
+  const EASE_FACTOR = 0.12;
   const SCALE_FACTOR = 0.6;
-  const POSITION_BUFFER = 30;
+  const POSITION_BUFFER = 20;
+
+  // Mouse event variables
+  let oldMouseX = 0,
+    mouseX = 0;
+  let oldMouseY = 0,
+    mouseY = 0;
+  let isMouseMoving = false;
+  let isMouseOver = null;
+
+  setInterval(() => {
+    if (oldMouseX != mouseX) isMouseMoving = true;
+    else if (oldMouseY != mouseY) isMouseMoving = true;
+    else isMouseMoving = false;
+    oldMouseX = mouseX;
+    oldMouseY = mouseY;
+  }, 300);
 
   // Wheel event variables
   let marker = true,
@@ -29,8 +47,6 @@ window.addEventListener("DOMContentLoaded", () => {
     event;
 
   let isMobile = false;
-
-  let imgHovered = null;
 
   const images = [];
 
@@ -61,7 +77,7 @@ window.addEventListener("DOMContentLoaded", () => {
       boxInnerEle.setAttribute(
         "style",
         `grid-template-columns: repeat(${colSpan * 2}, 1fr);
-        grid-template-rows: repeat(${rowSpan * 2}, 1fr);`
+      grid-template-rows: repeat(${rowSpan * 2}, 1fr);`
       );
 
       return boxInnerEle;
@@ -104,18 +120,26 @@ window.addEventListener("DOMContentLoaded", () => {
 
       this.DOM.imgContainer.appendChild(this.DOM.img);
 
-      this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
+      // this.DOM.imgContainer.addEventListener("mouseenter", () => curr.over());
 
-      this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
+      // this.DOM.imgContainer.addEventListener("mouseleave", () => curr.out());
+
+      this.DOM.imgContainer.addEventListener("click", () => {
+        lightbox.querySelector(".img-container").innerHTML = "";
+        lightbox.querySelector(".img-container").appendChild(this.image());
+        lightbox.classList.add("open");
+        stopAnimation();
+      });
     }
 
     // Initialising Variables
     init() {
-      this.startLocation = CLIENT_HEIGHT;
+      this.startLocation = CLIENT_HEIGHT - 40;
       this.buffer = POSITION_BUFFER;
       this.endLocation = this.startLocation;
       this.speed = 0;
       this.position = 0;
+      this.scale = 0.4;
       this.hasSpeed = false;
     }
 
@@ -127,6 +151,7 @@ window.addEventListener("DOMContentLoaded", () => {
         "style",
         `grid-area: ${rowStart} / ${colStart} / span ${rowSpan} / span ${colSpan}; z-index: ${this.zIndex};`
       );
+      imgContainerEle.dataset.visible = 0;
 
       return imgContainerEle;
     }
@@ -158,42 +183,79 @@ window.addEventListener("DOMContentLoaded", () => {
         y: t,
         ease: Linear.easeNone,
       });
-      this.removeBlur();
+      // if (this.hasSpeed) {
+      //   return;
+      // }
+      // if (this.isVisible()) {
+      //   TweenMax.to(this.DOM.imgContainer, 3, {
+      //     scale: 0.4 + SCALE_FACTOR,
+      //     ease: Sine.easeOut,
+      //   });
+      // } else {
+      //   TweenMax.to(this.DOM.imgContainer, 0.3, {
+      //     scale: 0.4,
+      //     ease: Sine.easeIn,
+      //   });
+      // }
+      // if (this.isVisible()) {
+      //   if (this.imageNo == 1) console.log(this.doesMouseCollide());
+      //   if (this.doesMouseCollide()) {
+      //     this.over();
+      //   } else {
+      //     this.out();
+      //   }
+      // } else {
+      //   this.out();
+      // }
+    }
+
+    // Checking if image container box collides with mouse pointer
+    doesMouseCollide() {
+      const {
+        top,
+        left,
+        right,
+        bottom,
+      } = this.DOM.imgContainer.getBoundingClientRect();
+      return mouseX > left && mouseX < right && mouseY < bottom && mouseY > top;
     }
 
     // Mouse Over Function
     over() {
-      imgHovered = this.imageNo;
-      mouseOver();
+      // if (!isMouseOver) {
+      //   TweenMax.to(this.DOM.imgContainer, 0.6, {
+      //     scale: 1 + SCALE_FACTOR,
+      //     ease: Sine.easeOut,
+      //   });
+      mouseOver(this.imageNo);
+      // }
     }
 
     // Mouse Out Function
     out() {
-      imgHovered = null;
+      // if (isMouseOver) {
+      //   TweenMax.to(this.DOM.imgContainer, 0.3, {
+      //     scale: 1,
+      //     ease: Sine.easeIn,
+      //   });
       mouseOut();
-    }
-
-    addBlur() {
-      if (imgHovered != this.imageNo) {
-        TweenMax.to(this.DOM.imgContainer, 0.5, {
-          filter: "blur(8px)",
-          ease: Power2.easeOut,
-        });
-      }
-    }
-
-    removeBlur() {
-      TweenMax.to(this.DOM.imgContainer, 0.1, {
-        filter: "blur(0px)",
-        ease: Power0.easeOut,
-      });
+      // }
     }
 
     // Change the speed of image
     changeSpeed(speed) {
-      if (speed != 0) this.buffer = 0;
-      if (speed == 0 && !this.isVisible()) this.buffer = POSITION_BUFFER;
+      // this.hasSpeed = false;
+      // if (speed != 0) {
+      //   this.buffer = 0;
+      //   this.hasSpeed = true;
+      // }
+      // if (speed == 0 && !this.isVisible()) this.buffer = POSITION_BUFFER;
       this.speed = speed;
+    }
+
+    // Add Friction to the speed
+    addFriction() {
+      this.speed = -IDLE_SPEED * FRICTION_COEFICIENT;
     }
 
     // Animate each frame at 60fps
@@ -230,11 +292,12 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      if (this.isVisible() && this.buffer > 0) {
-        this.buffer -= 4 * this.easing(this.buffer / POSITION_BUFFER);
-      }
-
-      this.endLocation = this.startLocation + this.buffer + this.position;
+      // if (this.isVisible() && this.buffer > 0) {
+      //   this.buffer -= 4 * this.easing(this.buffer / POSITION_BUFFER);
+      // }
+      // if (!this.isVisible() && this.buffer != POSITION_BUFFER)
+      //   this.buffer = POSITION_BUFFER;
+      this.endLocation = this.startLocation + this.position;
       this.setTop(this.endLocation);
     }
 
@@ -620,28 +683,51 @@ window.addEventListener("DOMContentLoaded", () => {
   // Animation Ends Here
 
   // Image Containers Mouse Hover Starts Here
-  function mouseOver() {
-    stopAnimation();
+  function mouseOver(no) {
+    isMouseOver = no;
     images.forEach((img) => {
-      img.addBlur();
-      // TweenMax.to(this.DOM.img, 0.8, {
-      //   scale: 1 + SCALE_FACTOR,
-      //   ease: Sine.easeOut,
-      // });
-
-      // TweenMax.to(this.DOM.img, 0.3, {
-      //   scale: 1,
-      //   ease: Power2.easeIn,
-      // });
+      img.addFriction();
     });
   }
   function mouseOut() {
-    startAnimation();
+    isMouseOver = null;
     images.forEach((img) => {
-      img.removeBlur();
+      img.changeSpeed(0);
     });
   }
   // Image Containers Mouse Hover Ends Here
+
+  // Mouse Tracking Starts Here
+  (function () {
+    document.onmousemove = handleMouseMove;
+    function handleMouseMove(event) {
+      var eventDoc, doc, body;
+
+      event = event || window.event; // IE-ism
+
+      // If pageX/Y aren't available and clientX/Y are,
+      // calculate pageX/Y - logic taken from jQuery.
+      // (This is to support old IE)
+      if (event.pageX == null && event.clientX != null) {
+        eventDoc = (event.target && event.target.ownerDocument) || document;
+        doc = eventDoc.documentElement;
+        body = eventDoc.body;
+
+        event.pageX =
+          event.clientX +
+          ((doc && doc.scrollLeft) || (body && body.scrollLeft) || 0) -
+          ((doc && doc.clientLeft) || (body && body.clientLeft) || 0);
+        event.pageY =
+          event.clientY +
+          ((doc && doc.scrollTop) || (body && body.scrollTop) || 0) -
+          ((doc && doc.clientTop) || (body && body.clientTop) || 0);
+      }
+
+      mouseX = event.pageX;
+      mouseY = event.pageY;
+    }
+  })();
+  // Mouse Tracking Ends Here
 
   // Wheel Tracking Code Starts Here
   window.addEventListener("DOMMouseScroll", wheel, false);
@@ -772,6 +858,24 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
   // Heading Toggle Ends Here
+
+  // Preloader Animation Starts Here
+  // const preloaderTl = new TimelineMax({ paused: true });
+
+  // preloaderTl.from(".loading-text", 2, {
+  //   top: "50%",
+  //   y: "-50%",
+  //   scale: 3,
+  // });
+
+  // document.body.classList.remove("loading");
+  // window.setTimeout(function () {
+  //   preloaderTl.play(0).then(function () {
+  //     document.body.classList.remove("loaded");
+  //     animation = requestAnimationFrame(updater);
+  //   });
+  // }, 3000);
+  // Preloader Animation Ends Here
 
   lightbox.addEventListener("click", function (e) {
     if (e.target !== this) return;

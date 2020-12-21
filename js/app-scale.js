@@ -17,7 +17,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const PAGE_HEIGHT = 800;
   const IDLE_SPEED = 1;
   const SCALE_FACTOR = 0.6;
-  const POSITION_BUFFER = 30;
 
   // Wheel event variables
   let marker = true,
@@ -59,7 +58,7 @@ window.addEventListener("DOMContentLoaded", () => {
       boxInnerEle.setAttribute(
         "style",
         `grid-template-columns: repeat(${colSpan * 2}, 1fr);
-        grid-template-rows: repeat(${rowSpan * 2}, 1fr);`
+      grid-template-rows: repeat(${rowSpan * 2}, 1fr);`
       );
 
       return boxInnerEle;
@@ -111,11 +110,10 @@ window.addEventListener("DOMContentLoaded", () => {
     // Initialising Variables
     init() {
       this.startLocation = CLIENT_HEIGHT;
-      this.buffer = POSITION_BUFFER;
       this.endLocation = this.startLocation;
       this.speed = 0;
       this.position = 0;
-      this.hasSpeed = false;
+      this.scaled = false;
     }
 
     // Creating the image container
@@ -157,12 +155,33 @@ window.addEventListener("DOMContentLoaded", () => {
         y: t,
         ease: Linear.easeNone,
       });
+      if (this.isVisible()) {
+        if (!this.scaled) {
+          this.scaleUp();
+        }
+      } else {
+        this.scaleDown();
+      }
+    }
+
+    scaleUp() {
+      TweenLite.to(this.DOM.img, 1, {
+        scale: 0.4 + SCALE_FACTOR,
+        ease: Sine.easeOut,
+      });
+      this.scaled = true;
+    }
+
+    scaleDown() {
+      TweenLite.to(this.DOM.img, 0.2, {
+        scale: 0.4,
+        ease: Power0.easeNone,
+      });
+      this.scaled = false;
     }
 
     // Change the speed of image
     changeSpeed(speed) {
-      if (speed != 0) this.buffer = 0;
-      if (speed == 0 && !this.isVisible()) this.buffer = POSITION_BUFFER;
       this.speed = speed;
     }
 
@@ -200,11 +219,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      if (this.isVisible() && this.buffer > 0) {
-        this.buffer -= 4 * this.easing(this.buffer / POSITION_BUFFER);
-      }
-
-      this.endLocation = this.startLocation + this.buffer + this.position;
+      this.endLocation = this.startLocation + this.position;
       this.setTop(this.endLocation);
     }
 
