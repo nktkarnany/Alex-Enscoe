@@ -805,7 +805,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const info = document.querySelector(".info");
   info.addEventListener("click", function (e) {
     if (e.target !== this) return;
-    toggleAnimation();
+    if (isShowing) toggleAnimation();
   });
 
   const heading = document.querySelector(".info-heading");
