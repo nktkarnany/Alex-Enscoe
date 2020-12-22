@@ -127,7 +127,7 @@ window.addEventListener("DOMContentLoaded", () => {
       this.buffer = POSITION_BUFFER;
       this.endLocation = this.startLocation;
       this.speed = 0;
-      this.position = 0;
+      this.position = -900;
       this.hasSpeed = false;
     }
 
