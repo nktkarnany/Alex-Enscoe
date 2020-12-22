@@ -815,10 +815,16 @@ window.addEventListener("DOMContentLoaded", () => {
     if (!isShowing) {
       stopAnimation();
       info.classList.add("show");
+      images.forEach((img) => {
+        img.addBlur();
+      });
       isShowing = true;
     } else {
       startAnimation();
       info.classList.remove("show");
+      images.forEach((img) => {
+        img.removeBlur();
+      });
       isShowing = false;
     }
   }

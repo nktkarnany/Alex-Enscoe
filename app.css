@@ -140,6 +140,7 @@ main {
     rgba(255, 255, 255, 0) 100%
   );
   overflow: hidden;
+  transition: height 0.1s ease;
 }
 
 .info.show {
@@ -167,9 +168,11 @@ main {
   top: 2.5rem;
   width: 30vw;
   visibility: hidden;
+  transition: visibility 0s linear;
 }
 
 .info.show .info-description {
+  transition: visibility 0.5s ease;
   visibility: visible;
 }
 
@@ -194,14 +197,16 @@ main {
   position: fixed;
   bottom: 1.25rem;
   left: 1.5rem;
-  font-size: 0.875rem;
+  font-size: 0.625rem;
   letter-spacing: -0.02em;
   font-weight: normal;
   opacity: 0.5;
   visibility: hidden;
+  transition: visibility 0s linear;
 }
 
 .info.show .info-footer {
+  transition: visibility 0.5s ease;
   visibility: visible;
 }
 
