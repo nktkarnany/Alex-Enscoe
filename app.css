@@ -162,6 +162,10 @@ main {
   user-select: none;
 }
 
+.info-heading:hover {
+  opacity: 0.75;
+}
+
 .info-description {
   position: fixed;
   left: 1.5rem;
