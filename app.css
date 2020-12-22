@@ -238,7 +238,28 @@ main {
     grid-template-columns: repeat(24, 1fr);
     grid-template-rows: repeat(592, 1fr);
   }
-}
 
-@media screen and (min-device-width: 320px) and (max-device-width: 480px) {
+  .info-heading {
+    left: 1.25rem;
+    font-size: 1.125rem;
+  }
+
+  .info-description {
+    left: 1.25rem;
+    width: calc(100vw - 3rem);
+  }
+
+  .info-description__text {
+    font-size: 1.125rem;
+    line-height: 1.222;
+  }
+
+  .info-description__links {
+    font-size: 1.125rem;
+  }
+
+  .info-footer {
+    left: 1.25rem;
+    bottom: 3rem;
+  }
 }
