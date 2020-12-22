@@ -46,6 +46,29 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const images = [];
 
+  // let N = 54;
+  // let totImages = Array(N),
+  //   i = 0;
+
+  // while (i < N) totImages[i++] = i;
+
+  const initLoad = [
+    {
+      position: -CLIENT_HEIGHT,
+      imgs: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    },
+  ];
+
+  const randLoad = 0;
+
+  initLoad[randLoad].imgs = initLoad[randLoad].imgs.map((i) => {
+    return `images/${i}.png`;
+  });
+
+  // totImages = totImages.filter(function (e) {
+  //   return this.indexOf(e) < 0;
+  // }, initLoad[randLoad].imgs);
+
   class Box {
     constructor(colStart, colSpan, rowStart, rowSpan) {
       this.DOM = {
@@ -127,7 +150,7 @@ window.addEventListener("DOMContentLoaded", () => {
       this.buffer = POSITION_BUFFER;
       this.endLocation = this.startLocation;
       this.speed = 0;
-      this.position = -900;
+      this.position = initLoad[randLoad].position;
       this.hasSpeed = false;
     }
 
@@ -146,11 +169,10 @@ window.addEventListener("DOMContentLoaded", () => {
     // Creating an img element
     image() {
       const imgEle = document.createElement("img");
-      const preload = Preload();
+      const preload = new Preload();
       preload.fetch([this.imgSrc]).then(() => {
         imgEle.setAttribute("src", this.imgSrc);
       });
-
       return imgEle;
     }
 
@@ -635,6 +657,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     images.push(...imgs);
   });
+
   // Elements Rendering Starts Here
 
   // Animation Starts Here
@@ -644,14 +667,20 @@ window.addEventListener("DOMContentLoaded", () => {
     });
     animation = requestAnimationFrame(updater); // for subsequent frames
   };
-
-  setTimeout(function () {
-    const body = document.querySelector("body");
-    body.classList.remove("loading");
-    body.classList.add("loaded");
-    startAnimation();
-  }, 500);
   // Animation Ends Here
+
+  // Initial Load Starts Here
+  const preload = Preload();
+
+  preload.fetch(initLoad[randLoad].imgs).then(() => {
+    const body = document.querySelector("body");
+    startAnimation();
+    body.classList.remove("loading");
+    setTimeout(() => {
+      body.classList.add("loaded");
+    }, 2000);
+  });
+  // Initial Load Ends Here
 
   // Image Containers Mouse Hover Starts Here
   function mouseOver() {
