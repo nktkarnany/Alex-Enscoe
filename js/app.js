@@ -46,28 +46,68 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const images = [];
 
-  // let N = 54;
-  // let totImages = Array(N),
-  //   i = 0;
-
-  // while (i < N) totImages[i++] = i;
-
   const initLoad = [
     {
       position: -CLIENT_HEIGHT,
       imgs: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     },
+    {
+      position: -CLIENT_HEIGHT * 1.5,
+      imgs: [7, 8, 9, 10, 11, 12, 13],
+    },
+    {
+      position: -CLIENT_HEIGHT * 2,
+      imgs: [11, 12, 13, 14, 15, 16, 17, 18],
+    },
+    {
+      position: -CLIENT_HEIGHT * 2.5,
+      imgs: [16, 17, 18, 19, 20, 21, 22, 23],
+    },
+    {
+      position: -CLIENT_HEIGHT * 3.1,
+      imgs: [21, 22, 23, 24, 25, 26, 27, 28],
+    },
+    {
+      position: -CLIENT_HEIGHT * 3.7,
+      imgs: [26, 27, 28, 29, 30, 31],
+    },
+    {
+      position: -CLIENT_HEIGHT * 4.2,
+      imgs: [30, 31, 32, 33, 34, 35, 36],
+    },
+    {
+      position: -CLIENT_HEIGHT * 4.6,
+      imgs: [32, 33, 34, 35, 36, 37, 38, 39],
+    },
+    {
+      position: -CLIENT_HEIGHT * 5.1,
+      imgs: [37, 38, 39, 40, 41, 42, 43, 44],
+    },
+    {
+      position: -CLIENT_HEIGHT * 5.7,
+      imgs: [42, 43, 44, 45, 46, 47, 48, 49],
+    },
+    {
+      position: -CLIENT_HEIGHT * 6,
+      imgs: [45, 46, 47, 48, 49, 50, 51, 52],
+    },
+    {
+      position: -CLIENT_HEIGHT * 6.3,
+      imgs: [48, 49, 50, 51, 52, 53, 54],
+    },
   ];
 
-  const randLoad = 0;
+  const randLoad = getRandomInt(initLoad.length);
+
+  console.log(randLoad);
+
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
 
   initLoad[randLoad].imgs = initLoad[randLoad].imgs.map((i) => {
     return `images/${i}.png`;
   });
-
-  // totImages = totImages.filter(function (e) {
-  //   return this.indexOf(e) < 0;
-  // }, initLoad[randLoad].imgs);
 
   class Box {
     constructor(colStart, colSpan, rowStart, rowSpan) {
@@ -169,10 +209,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // Creating an img element
     image() {
       const imgEle = document.createElement("img");
-      const preload = new Preload();
-      preload.fetch([this.imgSrc]).then(() => {
-        imgEle.setAttribute("src", this.imgSrc);
-      });
+      imgEle.setAttribute("src", this.imgSrc);
       return imgEle;
     }
 
@@ -657,7 +694,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     images.push(...imgs);
   });
-
   // Elements Rendering Starts Here
 
   // Animation Starts Here
@@ -678,7 +714,7 @@ window.addEventListener("DOMContentLoaded", () => {
     body.classList.remove("loading");
     setTimeout(() => {
       body.classList.add("loaded");
-    }, 2000);
+    }, 3000);
   });
   // Initial Load Ends Here
 
