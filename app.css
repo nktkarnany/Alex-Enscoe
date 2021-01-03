@@ -170,7 +170,7 @@ main {
   position: fixed;
   left: 1.5rem;
   top: 2.5rem;
-  width: 25vw;
+  width: 345px;
   visibility: hidden;
   transition: visibility 0s linear;
 }
