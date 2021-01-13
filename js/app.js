@@ -99,8 +99,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const randLoad = getRandomInt(initLoad.length);
 
-  console.log(randLoad);
-
   function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
   }
@@ -732,9 +730,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
       TweenMax.staggerTo(
         invisibleImages,
-        2,
+        invisibleImages.length * 0.3,
         { opacity: 1, ease: Power3.easeOut },
-        0.4
+        0.3
       ).then(function () {
         startAnimation();
       });
