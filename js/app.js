@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const PIXEL_STEP = 10;
   const LINE_HEIGHT = 40;
   const PAGE_HEIGHT = 800;
-  const IDLE_SPEED = 1;
+  const IDLE_SPEED = 0.5;
   const SCALE_FACTOR = 0.6;
   const POSITION_BUFFER = 30;
 
@@ -718,8 +718,9 @@ window.addEventListener("DOMContentLoaded", () => {
     loadedImgs.forEach((img) => {
       const i = images[parseInt(img) - 1].DOM.img;
       invisibleImages.push(i);
-      i.setAttribute("style", "opacity: 0;");
     });
+
+    shuffle(invisibleImages);
 
     const body = document.querySelector("body");
     startAnimation();
@@ -728,10 +729,10 @@ window.addEventListener("DOMContentLoaded", () => {
       body.classList.remove("loading");
       body.classList.add("loaded");
 
-      TweenMax.staggerTo(
+      TweenMax.staggerFrom(
         invisibleImages,
-        invisibleImages.length * 0.3,
-        { opacity: 1, ease: Power3.easeOut },
+        invisibleImages.length * 0.2,
+        { opacity: 0, ease: Power3.easeOut },
         0.3
       ).then(function () {
         startAnimation();
@@ -927,6 +928,8 @@ window.addEventListener("DOMContentLoaded", () => {
     animation = requestAnimationFrame(updater);
   }
 
+  // Helper Methods
+
   function dynamicSort(property) {
     var sortOrder = 1;
     if (property[0] === "-") {
@@ -941,5 +944,9 @@ window.addEventListener("DOMContentLoaded", () => {
         a[property] < b[property] ? -1 : a[property] > b[property] ? 1 : 0;
       return result * sortOrder;
     };
+  }
+
+  function shuffle(array) {
+    array.sort(() => Math.random() - 0.5);
   }
 });
