@@ -693,6 +693,8 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     images.push(...imgs);
+
+    images.sort(dynamicSort("imageNo"));
   });
   // Elements Rendering Starts Here
 
@@ -708,13 +710,35 @@ window.addEventListener("DOMContentLoaded", () => {
   // Initial Load Starts Here
   const preload = Preload();
 
-  preload.fetch(initLoad[randLoad].imgs).then(() => {
+  preload.fetch(initLoad[randLoad].imgs).then((imgs) => {
+    let invisibleImages = [];
+
+    let loadedImgs = imgs.map((i) => {
+      return i.fileName.slice(0, -4);
+    });
+
+    loadedImgs.forEach((img) => {
+      const i = images[parseInt(img) - 1].DOM.img;
+      invisibleImages.push(i);
+      i.setAttribute("style", "opacity: 0;");
+    });
+
     const body = document.querySelector("body");
     startAnimation();
-    body.classList.remove("loading");
     setTimeout(() => {
+      stopAnimation();
+      body.classList.remove("loading");
       body.classList.add("loaded");
-    }, 3000);
+
+      TweenMax.staggerTo(
+        invisibleImages,
+        2,
+        { opacity: 1, ease: Power3.easeOut },
+        0.4
+      ).then(function () {
+        startAnimation();
+      });
+    }, 1000);
   });
   // Initial Load Ends Here
 
@@ -901,6 +925,23 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function startAnimation() {
+    cancelAnimationFrame(animation);
     animation = requestAnimationFrame(updater);
+  }
+
+  function dynamicSort(property) {
+    var sortOrder = 1;
+    if (property[0] === "-") {
+      sortOrder = -1;
+      property = property.substr(1);
+    }
+    return function (a, b) {
+      /* next line works with strings and numbers,
+       * and you may want to customize it to your needs
+       */
+      var result =
+        a[property] < b[property] ? -1 : a[property] > b[property] ? 1 : 0;
+      return result * sortOrder;
+    };
   }
 });
