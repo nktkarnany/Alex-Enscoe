@@ -729,10 +729,10 @@ window.addEventListener("DOMContentLoaded", () => {
       body.classList.remove("loading");
       body.classList.add("loaded");
 
-      TweenMax.from(
+      TweenMax.staggerFrom(
         invisibleImages,
-        invisibleImages.length * 0.4,
-        { filter: "blur(5px)", ease: Power3.easeOut },
+        invisibleImages.length * 0.2,
+        { opacity: 0, ease: Power3.easeOut },
         0.3
       ).then(function () {
         startAnimation();
